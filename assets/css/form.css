@@ -1,0 +1,202 @@
+/* Own colours throughout, so the form stays readable on any theme, light or dark.
+   Margins on headings and paragraphs are !important because themes often style
+   h2 and p with more specific selectors, which would break the layout. */
+.sar-form-wrap {
+	--sar-text: #111827;
+	--sar-muted: #4b5563;
+	--sar-border: #6b7280;
+	--sar-surface: #ffffff;
+	box-sizing: border-box;
+	max-width: 36rem;
+	margin: 1.5rem auto;
+	padding: 1.5rem;
+	border: 1px solid #d1d5db;
+	border-radius: 0.75rem;
+	background: var(--sar-surface);
+	color: var(--sar-text);
+	font-size: 1rem;
+	line-height: 1.5;
+	text-align: left;
+}
+.sar-form-wrap *,
+.sar-form-wrap *::before,
+.sar-form-wrap *::after {
+	box-sizing: border-box;
+}
+.sar-form-wrap [hidden] {
+	display: none !important;
+}
+.sar-form-wrap .sar-form__heading {
+	margin: 0 0 0.5rem !important;
+	color: var(--sar-text);
+	font-size: 1.5rem;
+	line-height: 1.25;
+}
+.sar-form-wrap .sar-form__intro {
+	margin: 0 0 1.25rem !important;
+	color: var(--sar-muted);
+}
+.sar-form-wrap .sar-field {
+	margin: 0 0 1rem;
+}
+.sar-form-wrap .sar-field label {
+	display: block;
+	margin: 0 0 0.25rem;
+	color: var(--sar-text);
+	font-weight: 600;
+}
+.sar-form-wrap .sar-field input {
+	display: block;
+	width: 100%;
+	min-height: 2.75rem;
+	margin: 0;
+	padding: 0.5rem 0.75rem;
+	border: 1px solid var(--sar-border);
+	border-radius: 0.375rem;
+	background: #ffffff;
+	color: var(--sar-text);
+	font: inherit;
+}
+.sar-form-wrap .sar-field input::placeholder {
+	color: #6b7280;
+	opacity: 1;
+}
+.sar-form-wrap .sar-hp {
+	position: absolute !important;
+	left: -9999px;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+}
+.sar-form-wrap .sar-consent {
+	display: flex;
+	gap: 0.625rem;
+	align-items: flex-start;
+	margin: 0 0 1.25rem;
+	color: var(--sar-muted);
+	font-size: 0.9375rem;
+}
+.sar-form-wrap .sar-consent input {
+	flex: none;
+	width: 1.25rem;
+	height: 1.25rem;
+	margin: 0.125rem 0 0;
+}
+.sar-form-wrap .sar-consent label {
+	color: inherit;
+	font-weight: 400;
+}
+.sar-form-wrap a {
+	color: var(--sar-accent-text, #1d4ed8);
+	text-decoration: underline;
+}
+.sar-form-wrap .sar-button {
+	display: inline-block;
+	width: 100%;
+	min-height: 2.75rem;
+	padding: 0.625rem 1.25rem;
+	border: 0;
+	border-radius: 0.375rem;
+	background: var(--sar-accent, #1d4ed8);
+	color: var(--sar-on-accent, #ffffff);
+	font: inherit;
+	font-weight: 600;
+	text-align: center;
+	text-decoration: none;
+	cursor: pointer;
+}
+.sar-form-wrap a.sar-button,
+.sar-form-wrap a.sar-button:visited,
+.sar-form-wrap a.sar-button:hover {
+	color: var(--sar-on-accent, #ffffff) !important;
+	text-decoration: none !important;
+}
+.sar-form-wrap .sar-button:hover {
+	filter: brightness(0.92);
+}
+.sar-form-wrap .sar-button:disabled {
+	opacity: 0.6;
+	cursor: progress;
+}
+.sar-form-wrap input:focus-visible,
+.sar-form-wrap a:focus-visible,
+.sar-form-wrap .sar-button:focus-visible {
+	outline: 3px solid #111827;
+	outline-offset: 2px;
+	box-shadow: 0 0 0 2px #ffffff;
+}
+.sar-form-wrap .sar-result {
+	scroll-margin: 7rem 0;
+}
+.sar-form-wrap .sar-result:focus {
+	outline: none;
+}
+.sar-form-wrap .sar-form__message {
+	margin: 0.75rem 0 0 !important;
+	color: #a4161a;
+	font-weight: 600;
+}
+.sar-form-wrap .sar-form__message:empty {
+	display: none;
+}
+.sar-form-wrap .sar-sr {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+}
+.sar-form-wrap .sar-result__stage {
+	margin: 0 0 0.5rem !important;
+	font-weight: 600;
+}
+.sar-form-wrap progress {
+	display: block;
+	width: 100%;
+	height: 0.625rem;
+	margin: 0 0 1.25rem;
+	accent-color: var(--sar-accent, #1d4ed8);
+}
+.sar-form-wrap .sar-result__label {
+	margin: 0 !important;
+	color: var(--sar-muted);
+	font-weight: 600;
+}
+.sar-form-wrap .sar-result__score {
+	margin: 0 0 1rem;
+	font-size: 3rem;
+	font-weight: 700;
+	line-height: 1.1;
+}
+.sar-form-wrap .sar-result__score small {
+	color: var(--sar-muted);
+	font-size: 1rem;
+	font-weight: 400;
+}
+.sar-form-wrap .sar-result__cats {
+	margin: 0 0 1.25rem;
+	padding: 0;
+	list-style: none;
+}
+.sar-form-wrap .sar-result__cats li {
+	display: flex;
+	justify-content: space-between;
+	gap: 1rem;
+	margin: 0;
+	padding: 0.375rem 0;
+	border-bottom: 1px solid #e5e7eb;
+}
+.sar-form-wrap .sar-result__fixes-title {
+	margin: 0 0 0.5rem !important;
+	color: var(--sar-text);
+	font-size: 1.125rem;
+}
+.sar-form-wrap .sar-result__fixes {
+	margin: 0 0 1.25rem;
+	padding-left: 1.25rem;
+}
+.sar-form-wrap .sar-result__note {
+	margin: 0 0 0.75rem !important;
+}

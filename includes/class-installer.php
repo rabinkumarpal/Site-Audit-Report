@@ -1,0 +1,131 @@
+<?php
+/**
+ * Database tables, activation and scheduled maintenance.
+ *
+ * @package Site_Audit_Report
+ */
+
+namespace Site_Audit_Report;
+
+defined( 'ABSPATH' ) || exit;
+
+/**
+ * Handles install, upgrade and daily housekeeping.
+ */
+final class Installer {
+
+	const DB_VERSION       = '1';
+	const MAINTENANCE_HOOK = 'sar_daily_maintenance';
+
+	/**
+	 * Activation callback.
+	 *
+	 * @return void
+	 */
+	public static function activate() {
+		self::create_tables();
+		update_option( 'sar_db_version', self::DB_VERSION, false );
+		if ( false === get_option( Settings::OPTION ) ) {
+			add_option( Settings::OPTION, Settings::defaults(), '', false );
+		}
+		if ( ! wp_next_scheduled( self::MAINTENANCE_HOOK ) ) {
+			wp_schedule_event( time() + HOUR_IN_SECONDS, 'daily', self::MAINTENANCE_HOOK );
+		}
+	}
+
+	/**
+	 * Deactivation callback. Stored data stays until the plugin is deleted.
+	 *
+	 * @return void
+	 */
+	public static function deactivate() {
+		wp_clear_scheduled_hook( self::MAINTENANCE_HOOK );
+		wp_unschedule_hook( Queue::HOOK );
+	}
+
+	/**
+	 * Runs table changes after a plugin update.
+	 *
+	 * @return void
+	 */
+	public static function maybe_upgrade() {
+		if ( get_option( 'sar_db_version' ) !== self::DB_VERSION ) {
+			self::activate();
+		}
+	}
+
+	/**
+	 * Creates or updates the plugin's tables.
+	 *
+	 * @return void
+	 */
+	private static function create_tables() {
+		global $wpdb;
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+
+		$charset = $wpdb->get_charset_collate();
+		$audits  = $wpdb->prefix . 'sar_audits';
+		$limits  = $wpdb->prefix . 'sar_rate_limits';
+
+		dbDelta(
+			"CREATE TABLE {$audits} (
+				id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+				token char(64) NOT NULL,
+				site_url varchar(2048) NOT NULL,
+				domain varchar(190) NOT NULL,
+				business_name varchar(191) NOT NULL DEFAULT '',
+				email varchar(191) NOT NULL DEFAULT '',
+				source varchar(20) NOT NULL DEFAULT 'form',
+				status varchar(20) NOT NULL DEFAULT 'queued',
+				stage varchar(40) NOT NULL DEFAULT '',
+				progress tinyint(3) unsigned NOT NULL DEFAULT 0,
+				state longtext NULL,
+				result longtext NULL,
+				score tinyint(3) unsigned NULL,
+				previous_score tinyint(3) unsigned NULL,
+				lead_status varchar(20) NOT NULL DEFAULT 'new',
+				notes longtext NULL,
+				consent_text text NULL,
+				consent_at datetime NULL,
+				ip_hash char(64) NOT NULL DEFAULT '',
+				attempts tinyint(3) unsigned NOT NULL DEFAULT 0,
+				error varchar(255) NOT NULL DEFAULT '',
+				locked_at datetime NULL,
+				email_sent_at datetime NULL,
+				created_at datetime NOT NULL,
+				updated_at datetime NOT NULL,
+				completed_at datetime NULL,
+				PRIMARY KEY  (id),
+				UNIQUE KEY token (token),
+				KEY domain (domain),
+				KEY email (email),
+				KEY status (status),
+				KEY created_at (created_at)
+			) {$charset};"
+		);
+
+		dbDelta(
+			"CREATE TABLE {$limits} (
+				bucket varchar(190) NOT NULL,
+				window_start int(10) unsigned NOT NULL,
+				hits int(10) unsigned NOT NULL DEFAULT 0,
+				PRIMARY KEY  (bucket,window_start),
+				KEY window_start (window_start)
+			) {$charset};"
+		);
+	}
+
+	/**
+	 * Daily housekeeping: retention, old rate-limit rows, stuck scans.
+	 *
+	 * @return void
+	 */
+	public static function maintenance() {
+		$days = (int) Settings::get( 'retention_days' );
+		if ( $days > 0 ) {
+			Audits::delete_older_than( $days );
+		}
+		Rate_Limiter::purge();
+		Queue::nudge();
+	}
+}

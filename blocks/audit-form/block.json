@@ -1,0 +1,21 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "site-audit-report/audit-form",
+	"title": "Site Audit Form",
+	"category": "widgets",
+	"icon": "chart-area",
+	"description": "A form where visitors request a scored audit of their website.",
+	"keywords": [ "audit", "seo", "lead" ],
+	"textdomain": "site-audit-report",
+	"attributes": {
+		"heading": { "type": "string", "default": "" },
+		"intro": { "type": "string", "default": "" },
+		"button": { "type": "string", "default": "" }
+	},
+	"supports": {
+		"html": false,
+		"align": [ "wide", "full" ]
+	},
+	"editorScript": "file:./index.js"
+}

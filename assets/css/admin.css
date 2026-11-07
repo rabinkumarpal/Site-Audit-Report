@@ -1,0 +1,66 @@
+.sar-admin-new {
+	margin: 1rem 0;
+	padding: 0.75rem 1rem;
+	border: 1px solid #c3c4c7;
+	background: #ffffff;
+}
+.sar-admin-new summary {
+	font-weight: 600;
+	cursor: pointer;
+}
+.sar-admin-new label {
+	display: block;
+	font-weight: 600;
+}
+.sar-admin-new input[type="text"] {
+	display: block;
+	margin-top: 0.25rem;
+	font-weight: 400;
+}
+.sar-admin-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+	gap: 1rem;
+	margin: 1rem 0;
+}
+.sar-admin-panel {
+	min-width: 0;
+	padding: 1rem 1.25rem;
+	border: 1px solid #c3c4c7;
+	background: #ffffff;
+}
+.sar-admin-panel h2 {
+	margin-top: 0;
+}
+.sar-admin-dl {
+	display: grid;
+	grid-template-columns: max-content minmax(0, 1fr);
+	gap: 0.375rem 1rem;
+	margin: 0;
+}
+.sar-admin-dl dt {
+	font-weight: 600;
+}
+.sar-admin-dl dd {
+	margin: 0;
+	overflow-wrap: anywhere;
+}
+.sar-admin-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+}
+.sar-admin .button.sar-link-danger {
+	border-color: #b32d2e;
+	color: #b32d2e;
+}
+.sar-admin-report .sar-main {
+	max-width: none;
+	padding: 1rem 0;
+}
+.sar-admin-report .sar-top {
+	border: 1px solid #c3c4c7;
+}
+.sar-admin-report .sar-top__inner {
+	max-width: none;
+}
