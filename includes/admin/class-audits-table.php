@@ -227,6 +227,7 @@ final class Audits_Table extends WP_List_Table {
 		$actions = array(
 			'view'   => '<a href="' . esc_url( $view ) . '">' . esc_html__( 'View', 'site-audit-report' ) . '</a>',
 			'seo'    => '<a href="' . esc_url( admin_url( 'admin.php?page=' . Tools::SEO_SLUG . '&inspect=' . rawurlencode( (string) $item['site_url'] ) ) ) . '">' . esc_html__( 'Inspect SEO', 'site-audit-report' ) . '</a>',
+			'badge'  => '<a href="' . esc_url( admin_url( 'admin.php?page=' . Badges_Page::SLUG . '&audit=' . $id ) ) . '">' . esc_html__( 'Create badge', 'site-audit-report' ) . '</a>',
 			'rerun'  => '<a href="' . esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=sar_rerun&audit=' . $id ), 'sar_rerun_' . $id ) ) . '">' . esc_html__( 'Re-run', 'site-audit-report' ) . '</a>',
 			'delete' => '<a class="submitdelete" href="' . esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=sar_delete&audit=' . $id ), 'sar_delete_' . $id ) ) . '">' . esc_html__( 'Delete', 'site-audit-report' ) . '</a>',
 		);

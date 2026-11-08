@@ -65,7 +65,7 @@ final class Http_Client {
 	 * Requests a URL and follows redirects by hand so each hop is checked.
 	 *
 	 * @param string              $url  URL.
-	 * @param array<string,mixed> $args method, timeout, max_bytes, follow, sslverify.
+	 * @param array<string,mixed> $args method, timeout, max_bytes, follow, sslverify, range (ask only for the first max_bytes, for plain files).
 	 * @return array<string,mixed> ok, code, headers, body, url, chain, error, truncated.
 	 */
 	public function fetch( $url, array $args = array() ) {
@@ -76,6 +76,7 @@ final class Http_Client {
 				'max_bytes' => self::DEFAULT_MAX_BYTES,
 				'follow'    => true,
 				'sslverify' => true,
+				'range'     => false,
 			),
 			$args
 		);
@@ -177,9 +178,15 @@ final class Http_Client {
 				'user-agent'          => self::user_agent(),
 				'limit_response_size' => $args['max_bytes'],
 				'decompress'          => false,
-				'headers'             => array(
-					'Accept'          => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-					'Accept-Encoding' => 'identity',
+				// A size cap alone still downloads the whole body and discards the rest, so a
+				// large file (a 60 MB debug.log, say) would run into the timeout. A range request asks
+				// the server for only the part we read; servers that ignore it still get the cap.
+				'headers'             => array_merge(
+					array(
+						'Accept'          => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+						'Accept-Encoding' => 'identity',
+					),
+					! empty( $args['range'] ) ? array( 'Range' => 'bytes=0-' . max( 0, (int) $args['max_bytes'] - 1 ) ) : array()
 				),
 			)
 		);

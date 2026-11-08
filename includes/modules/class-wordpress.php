@@ -132,7 +132,7 @@ final class Wordpress implements Module {
 		$assets = self::assets( $html );
 
 		foreach ( array_slice( $assets['themes'], 0, 2, true ) as $slug => $vers ) {
-			$style = $http->fetch( $origin . '/wp-content/themes/' . $slug . '/style.css', array( 'max_bytes' => 8192, 'timeout' => 6 ) );
+			$style = $http->fetch( $origin . '/wp-content/themes/' . $slug . '/style.css', array( 'max_bytes' => 8192, 'timeout' => 6, 'range' => true ) );
 			$body  = ! empty( $style['ok'] ) ? (string) $style['body'] : '';
 			$name  = preg_match( '/Theme Name:\s*(.+)/i', $body, $m ) ? trim( $m[1] ) : self::nice( $slug );
 			$ver   = preg_match( '/^\s*\*?\s*Version:\s*([0-9][0-9a-z.\-]*)/im', $body, $m ) ? $m[1] : '';
@@ -180,7 +180,7 @@ final class Wordpress implements Module {
 			$src  = '';
 			$body = '';
 			if ( time() - $started < self::TIME_BUDGET ) {
-				$readme = $http->fetch( $origin . '/wp-content/plugins/' . $slug . '/readme.txt', array( 'max_bytes' => 16384, 'timeout' => 6 ) );
+				$readme = $http->fetch( $origin . '/wp-content/plugins/' . $slug . '/readme.txt', array( 'max_bytes' => 16384, 'timeout' => 6, 'range' => true ) );
 				$body   = ! empty( $readme['ok'] ) && ! preg_match( '#<html#i', substr( (string) $readme['body'], 0, 500 ) ) ? (string) $readme['body'] : '';
 				if ( preg_match( '/^===\s*(.+?)\s*===/m', $body, $m ) ) {
 					$name = trim( $m[1] );
@@ -471,7 +471,7 @@ final class Wordpress implements Module {
 			'open'    => false !== stripos( (string) ( $xml['body'] ?? '' ), 'XML-RPC server accepts POST requests only' ),
 		);
 
-		$readme        = $http->fetch( $origin . '/readme.html', array( 'max_bytes' => 8192, 'timeout' => 6, 'follow' => false ) );
+		$readme        = $http->fetch( $origin . '/readme.html', array( 'max_bytes' => 8192, 'timeout' => 6, 'follow' => false, 'range' => true ) );
 		$out['readme'] = array(
 			'checked' => empty( $readme['error'] ),
 			'open'    => ! empty( $readme['ok'] ) && false !== stripos( (string) $readme['body'], 'WordPress' ) && false !== stripos( (string) $readme['body'], 'readme' ),
@@ -483,7 +483,7 @@ final class Wordpress implements Module {
 			'open'    => ! empty( $listing['ok'] ) && (bool) preg_match( '#<title>\s*Index of /#i', (string) $listing['body'] ),
 		);
 
-		$debug        = $http->fetch( $origin . '/wp-content/debug.log', array( 'max_bytes' => 4096, 'timeout' => 6, 'follow' => false ) );
+		$debug        = $http->fetch( $origin . '/wp-content/debug.log', array( 'max_bytes' => 4096, 'timeout' => 8, 'follow' => false, 'range' => true ) );
 		$type         = (string) ( $debug['headers']['content-type'] ?? '' );
 		$out['debug'] = array(
 			'checked' => empty( $debug['error'] ),

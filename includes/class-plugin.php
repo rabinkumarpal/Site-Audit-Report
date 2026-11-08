@@ -31,6 +31,7 @@ final class Plugin {
 		Service_Bay::register();
 		Seo_Inspector::register();
 		Vuln_Watch::register();
+		Badges::register();
 		Report_Route::register();
 		Privacy::register();
 

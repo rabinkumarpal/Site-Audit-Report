@@ -4,7 +4,7 @@ Tags: seo audit, website audit, lead generation, pagespeed, site report
 Requires at least: 6.3
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.2.0
+Stable tag: 1.3.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -107,6 +107,16 @@ Every WordPress site the plugin scans (full audits and security checks) is added
 
 Besides the files a home page loads, the WordPress check reads the public REST API index (`/wp-json/`). Plugins that register routes (WooCommerce, Yoast SEO, Jetpack, contact forms and many more) are found even when they load nothing on the home page, and their versions are read from readme.txt. Unknown routes only count if a matching plugin readme exists. Extend the namespace map with the `sar_rest_namespace_map` filter.
 
+== Trust badges ==
+
+Give a client a "Secured by <your name>" badge for their site under Site Audits > Trust badges (or "Create badge" on any audit row). Creating one runs its first check straight away; after that the site is re-checked every week.
+
+* The client pastes one line of HTML (a linked image). It works on any website, WordPress or not.
+* The badge shows **Verified <date>** (green), **Under review** (amber) or **Not verified** (grey). It turns grey if the badge is paused or deleted, has not been verified for 14 days, or is shown on a different website from the one it was issued for.
+* Clicking it opens a public verification page with the status, the last verified date, what is checked and a strip of recent results.
+* The weekly check covers HTTPS and the certificate, high or critical and actively exploited (CISA) vulnerabilities in the versions the site shows, a public debug log and a browsable uploads folder.
+* The reasons for "Under review" are never shown publicly. The team gets them by email when a badge changes state, and on the Trust badges screen.
+
 == Limits and safeguards ==
 
 Each of these is a setting unless noted.
@@ -174,6 +184,10 @@ Actions: `sar_audit_completed` (audit record, report data).
 Use `$context->http` for any request to an address taken from a scanned site. It applies the private-network protection; `wp_remote_get()` does not. Requests to a fixed vendor API can use the normal HTTP functions.
 
 == Changelog ==
+
+= 1.3.0 =
+* New: Trust badges, a self-checking "Secured by" badge with a public verification page, weekly re-checks, copy protection and private reasons.
+* Fixed: very large files such as a 60 MB public debug.log no longer time out the check; file probes now use range requests.
 
 = 1.2.0 =
 * New: Vulnerability watch. Scanned sites' versions are re-checked daily against newly published vulnerabilities and the CISA exploited list, with an alerts screen, team digest and optional lead notices.

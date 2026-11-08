@@ -14,7 +14,7 @@ defined( 'ABSPATH' ) || exit;
  */
 final class Installer {
 
-	const DB_VERSION       = '2';
+	const DB_VERSION       = '3';
 	const MAINTENANCE_HOOK = 'sar_daily_maintenance';
 
 	/**
@@ -73,6 +73,7 @@ final class Installer {
 		$limits  = $wpdb->prefix . 'sar_rate_limits';
 		$inv     = $wpdb->prefix . 'sar_inventory';
 		$alerts  = $wpdb->prefix . 'sar_alerts';
+		$badges  = $wpdb->prefix . 'sar_badges';
 
 		dbDelta(
 			"CREATE TABLE {$audits} (
@@ -172,6 +173,30 @@ final class Installer {
 				KEY vuln_id (vuln_id)
 			) {$charset};"
 		);
+
+		// Trust badges: a public, self-checking "secured by" badge per client site.
+		dbDelta(
+			"CREATE TABLE {$badges} (
+				id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+				token char(24) NOT NULL,
+				audit_id bigint(20) unsigned NOT NULL DEFAULT 0,
+				site_url varchar(2048) NOT NULL,
+				domain varchar(190) NOT NULL,
+				label varchar(80) NOT NULL DEFAULT '',
+				active tinyint(1) NOT NULL DEFAULT 1,
+				state varchar(10) NOT NULL DEFAULT 'pending',
+				issues longtext NULL,
+				history longtext NULL,
+				views bigint(20) unsigned NOT NULL DEFAULT 0,
+				checked_at datetime NULL,
+				verified_at datetime NULL,
+				created_at datetime NOT NULL,
+				PRIMARY KEY  (id),
+				UNIQUE KEY token (token),
+				KEY domain (domain),
+				KEY checked_at (checked_at)
+			) {$charset};"
+		);
 	}
 
 	/**
@@ -187,5 +212,6 @@ final class Installer {
 		Rate_Limiter::purge();
 		Queue::nudge();
 		Vuln_Watch::run();
+		Badges::run_due();
 	}
 }

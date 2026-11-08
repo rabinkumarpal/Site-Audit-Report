@@ -161,3 +161,27 @@ a.sar-widget__tile:hover, a.sar-widget__tile:focus { background: #0d3826; color:
 .sar-sev--kev { background: #7f1d1d; color: #fee2e2; }
 .sar-reason { font-size: 12px; color: #50575e; }
 @media (max-width: 782px) { .sar-watch__stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } .sar-alert__head { flex-direction: column; } }
+
+/* ---------- Trust badges */
+.sar-badges { max-width: 1100px; }
+.sar-badges__new { margin: 16px 0; }
+.sar-badges__new summary { cursor: pointer; font-size: 14px; }
+.sar-badges__form { display: grid; gap: 12px; margin-top: 14px; max-width: 560px; }
+.sar-badges__form label span { display: block; font-weight: 600; margin-bottom: 4px; }
+.sar-badges__form select, .sar-badges__form input[type="text"] { width: 100%; max-width: none; }
+.sar-badge { margin: 14px 0; border-left: 5px solid #9ca3af; display: flex; flex-direction: column; gap: 14px; }
+.sar-badge--verified { border-left-color: #10b981; }
+.sar-badge--review { border-left-color: #f59e0b; }
+.sar-badge.is-focus { box-shadow: 0 0 0 2px #0e9f6e; }
+.sar-badge__top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+.sar-badge__top h2 { margin: 0 0 4px; font-size: 17px; }
+.sar-badge__meta { margin: 0; color: #50575e; }
+.sar-badge__dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; background: #9ca3af; }
+.sar-badge--verified .sar-badge__dot { background: #10b981; }
+.sar-badge--review .sar-badge__dot { background: #f59e0b; }
+.sar-badge__preview svg { display: block; max-width: 100%; height: auto; }
+.sar-badge__issues { padding: 12px 14px; border-radius: 10px; background: #fffbeb; border: 1px solid #fde68a; }
+.sar-badge__issues ul { margin: 6px 0 0 18px; list-style: disc; }
+.sar-badge__embed code { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; display: block; color: #50575e; font-size: 12px; }
+.sar-badge__embed { min-width: 0; }
+.sar-badge__embed code { flex: 1; min-width: 0; }

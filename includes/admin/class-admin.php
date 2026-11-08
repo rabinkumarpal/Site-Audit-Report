@@ -35,6 +35,7 @@ final class Admin {
 	public static function register() {
 		Tools::register();
 		Watch::register();
+		Badges_Page::register();
 		add_action( 'admin_menu', array( self::class, 'menu' ) );
 		add_action( 'admin_init', array( self::class, 'register_settings' ) );
 		add_action( 'admin_enqueue_scripts', array( self::class, 'assets' ) );
