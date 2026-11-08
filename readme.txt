@@ -4,7 +4,7 @@ Tags: seo audit, website audit, lead generation, pagespeed, site report
 Requires at least: 6.3
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.1.0
+Stable tag: 1.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -93,6 +93,20 @@ Add `[site_audit_seo]` to a full-width page. It is separate from the full audit:
 
 Shortcode attributes: `examples`, `offset` (as for the Security Check), `cta_url` and `cta_label` (an optional call to action under the report). `?inspect=<url>` on the page runs a check straight away, so results can be shared. Visitors are limited to 40 inspections an hour.
 
+== Vulnerability watch ==
+
+Every WordPress site the plugin scans (full audits and security checks) is added to the watch: its core, theme and plugin versions are stored. Once a day the watch re-matches those versions against WPVulnerability.net and the CISA Known Exploited Vulnerabilities list. No site is scanned again.
+
+* When a vulnerability is **newly published** for a version a site was running, or a known one is **newly added to the CISA exploited list**, an alert is recorded. Everything known at scan time is the baseline, so only real news raises alerts.
+* Alerts appear under Site Audits > Vulnerability watch (with a count in the menu), grouped by vulnerability with every exposed lead, their contact details and Contacted / Dismiss buttons. "Check now" runs it on demand.
+* The team gets one email digest per run (lead alerts email, or the site admin email).
+* Optional: Settings > Vulnerability watch > Notify leads sends each affected lead a short security notice, only if they gave contact consent, once per issue. It is off by default.
+* Developers can use the `sar_watch_alerts` action.
+
+== Finding plugins through the REST API ==
+
+Besides the files a home page loads, the WordPress check reads the public REST API index (`/wp-json/`). Plugins that register routes (WooCommerce, Yoast SEO, Jetpack, contact forms and many more) are found even when they load nothing on the home page, and their versions are read from readme.txt. Unknown routes only count if a matching plugin readme exists. Extend the namespace map with the `sar_rest_namespace_map` filter.
+
 == Limits and safeguards ==
 
 Each of these is a setting unless noted.
@@ -160,6 +174,11 @@ Actions: `sar_audit_completed` (audit record, report data).
 Use `$context->http` for any request to an address taken from a scanned site. It applies the private-network protection; `wp_remote_get()` does not. Requests to a fixed vendor API can use the normal HTTP functions.
 
 == Changelog ==
+
+= 1.2.0 =
+* New: Vulnerability watch. Scanned sites' versions are re-checked daily against newly published vulnerabilities and the CISA exploited list, with an alerts screen, team digest and optional lead notices.
+* New: the WordPress check finds plugins through the public REST API index, not only from home page files.
+* Changed: vulnerability records carry a stable ID; the lookup cache was renewed.
 
 = 1.1.0 =
 * New: WordPress Security Check shortcode `[site_audit_security]`: WordPress vulnerability check, risk report, priced fix plan and booking.

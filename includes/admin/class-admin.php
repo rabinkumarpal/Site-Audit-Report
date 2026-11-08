@@ -34,6 +34,7 @@ final class Admin {
 	 */
 	public static function register() {
 		Tools::register();
+		Watch::register();
 		add_action( 'admin_menu', array( self::class, 'menu' ) );
 		add_action( 'admin_init', array( self::class, 'register_settings' ) );
 		add_action( 'admin_enqueue_scripts', array( self::class, 'assets' ) );
@@ -467,6 +468,21 @@ final class Admin {
 					}
 					$text( 'service_book_url', __( 'Calendar link (optional)', 'site-audit-report' ), __( 'If set, the booking confirmation offers this link (Calendly, Google Calendar and so on).', 'site-audit-report' ), 'url' );
 					?>
+				</table>
+
+				<h2><?php esc_html_e( 'Vulnerability watch', 'site-audit-report' ); ?></h2>
+				<table class="form-table" role="presentation">
+					<tr>
+						<th scope="row"><?php esc_html_e( 'Daily re-check', 'site-audit-report' ); ?></th>
+						<td><label><input type="checkbox" name="<?php echo esc_attr( $name ); ?>[watch_enabled]" value="1" <?php checked( ! empty( $s['watch_enabled'] ) ); ?>> <?php esc_html_e( 'Re-check scanned sites\' versions against new vulnerabilities every day and email the team a digest', 'site-audit-report' ); ?></label></td>
+					</tr>
+					<tr>
+						<th scope="row"><?php esc_html_e( 'Notify leads', 'site-audit-report' ); ?></th>
+						<td>
+							<label><input type="checkbox" name="<?php echo esc_attr( $name ); ?>[watch_email_leads]" value="1" <?php checked( ! empty( $s['watch_email_leads'] ) ); ?>> <?php esc_html_e( 'Also send each affected lead a short security notice', 'site-audit-report' ); ?></label>
+							<p class="description"><?php esc_html_e( 'Only leads who gave contact consent (form leads and security-check bookings), once per issue. Check this fits your privacy policy before turning it on.', 'site-audit-report' ); ?></p>
+						</td>
+					</tr>
 				</table>
 
 				<h2><?php esc_html_e( 'Limits', 'site-audit-report' ); ?></h2>

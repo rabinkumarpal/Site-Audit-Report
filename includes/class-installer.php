@@ -14,7 +14,7 @@ defined( 'ABSPATH' ) || exit;
  */
 final class Installer {
 
-	const DB_VERSION       = '1';
+	const DB_VERSION       = '2';
 	const MAINTENANCE_HOOK = 'sar_daily_maintenance';
 
 	/**
@@ -24,7 +24,12 @@ final class Installer {
 	 */
 	public static function activate() {
 		self::create_tables();
+		$was = get_option( 'sar_db_version' );
 		update_option( 'sar_db_version', self::DB_VERSION, false );
+		if ( $was && version_compare( (string) $was, '2', '<' ) ) {
+			// Start watching sites that were scanned before the watch existed.
+			Vuln_Watch::backfill();
+		}
 		if ( false === get_option( Settings::OPTION ) ) {
 			add_option( Settings::OPTION, Settings::defaults(), '', false );
 		}
@@ -66,6 +71,8 @@ final class Installer {
 		$charset = $wpdb->get_charset_collate();
 		$audits  = $wpdb->prefix . 'sar_audits';
 		$limits  = $wpdb->prefix . 'sar_rate_limits';
+		$inv     = $wpdb->prefix . 'sar_inventory';
+		$alerts  = $wpdb->prefix . 'sar_alerts';
 
 		dbDelta(
 			"CREATE TABLE {$audits} (
@@ -113,6 +120,58 @@ final class Installer {
 				KEY window_start (window_start)
 			) {$charset};"
 		);
+
+		// What each scanned WordPress site showed: re-matched daily against new vulnerabilities.
+		dbDelta(
+			"CREATE TABLE {$inv} (
+				id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+				audit_id bigint(20) unsigned NOT NULL,
+				domain varchar(190) NOT NULL,
+				type varchar(10) NOT NULL,
+				slug varchar(100) NOT NULL,
+				name varchar(120) NOT NULL DEFAULT '',
+				version varchar(40) NOT NULL,
+				known longtext NULL,
+				kev text NULL,
+				created_at datetime NOT NULL,
+				checked_at datetime NULL,
+				PRIMARY KEY  (id),
+				UNIQUE KEY audit_item (audit_id,type,slug),
+				KEY domain (domain),
+				KEY lookup (type,slug,version),
+				KEY checked_at (checked_at)
+			) {$charset};"
+		);
+
+		dbDelta(
+			"CREATE TABLE {$alerts} (
+				id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+				audit_id bigint(20) unsigned NOT NULL,
+				domain varchar(190) NOT NULL,
+				type varchar(10) NOT NULL,
+				slug varchar(100) NOT NULL,
+				name varchar(120) NOT NULL DEFAULT '',
+				version varchar(40) NOT NULL,
+				vuln_id varchar(64) NOT NULL,
+				vuln_name varchar(191) NOT NULL DEFAULT '',
+				severity varchar(10) NOT NULL DEFAULT 'unknown',
+				score decimal(3,1) NULL,
+				kev tinyint(1) NOT NULL DEFAULT 0,
+				cves varchar(255) NOT NULL DEFAULT '',
+				fixed varchar(40) NOT NULL DEFAULT '',
+				link varchar(500) NOT NULL DEFAULT '',
+				published date NULL,
+				reason varchar(10) NOT NULL DEFAULT 'new',
+				status varchar(20) NOT NULL DEFAULT 'new',
+				notified_at datetime NULL,
+				lead_emailed_at datetime NULL,
+				created_at datetime NOT NULL,
+				PRIMARY KEY  (id),
+				UNIQUE KEY alert (audit_id,type,slug,vuln_id,reason),
+				KEY status (status),
+				KEY vuln_id (vuln_id)
+			) {$charset};"
+		);
 	}
 
 	/**
@@ -127,5 +186,6 @@ final class Installer {
 		}
 		Rate_Limiter::purge();
 		Queue::nudge();
+		Vuln_Watch::run();
 	}
 }

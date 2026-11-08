@@ -55,6 +55,8 @@ final class Settings {
 			'price_monitor'    => 699,
 			'price_backup'     => 799,
 			'service_book_url' => '',
+			'watch_enabled'    => 1,
+			'watch_email_leads' => 0,
 		);
 	}
 
@@ -154,6 +156,9 @@ final class Settings {
 			$key           = 'price_' . $tool;
 			$clean[ $key ] = isset( $input[ $key ] ) ? min( 10000000, absint( $input[ $key ] ) ) : (int) $current[ $key ];
 		}
+
+		$clean['watch_enabled']     = empty( $input['watch_enabled'] ) ? 0 : 1;
+		$clean['watch_email_leads'] = empty( $input['watch_email_leads'] ) ? 0 : 1;
 
 		$clean['email_lead']   = empty( $input['email_lead'] ) ? 0 : 1;
 		$clean['notify_email'] = sanitize_email( (string) ( $input['notify_email'] ?? '' ) );

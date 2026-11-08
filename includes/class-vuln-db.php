@@ -47,7 +47,8 @@ final class Vuln_Db {
 		if ( '' === $subject ) {
 			return array();
 		}
-		$key    = 'sar_vdb_' . md5( $type . ':' . $subject );
+		// v2: records carry a stable id, which the vulnerability watch depends on.
+		$key    = 'sar_vdb3_' . md5( $type . ':' . $subject );
 		$cached = get_transient( $key );
 		if ( is_array( $cached ) ) {
 			return $cached;
@@ -143,6 +144,8 @@ final class Vuln_Db {
 
 		$op = (array) ( $item['operator'] ?? array() );
 		return array(
+			// Upstream uuids repeat across records, so the id also covers the CVEs and title.
+			'id'        => md5( (string) ( $item['uuid'] ?? '' ) . '|' . implode( ',', $cves ) . '|' . $title . '|' . $range ),
 			'name'      => mb_substr( '' !== $title ? $title : __( 'Security issue', 'site-audit-report' ), 0, 160 ),
 			'range'     => preg_match( '/[<>=]/', $range ) ? mb_substr( $range, 0, 120 ) : '',
 			'min'       => $op['min_version'] ?? null,
@@ -221,6 +224,9 @@ final class Vuln_Db {
 			$kev = self::kev();
 			foreach ( $list as $vuln ) {
 				// The core endpoint already returns only what affects that version.
+				if ( empty( $vuln['id'] ) ) {
+					$vuln['id'] = md5( (string) $vuln['name'] . implode( ',', (array) $vuln['cves'] ) . (string) $vuln['max'] );
+				}
 				if ( 'core' === $type || self::affects( $version, $vuln ) ) {
 					$vuln['kev']   = (bool) array_intersect( $vuln['cves'], $kev );
 					$vuln['fixed'] = ( 'lt' === $vuln['max_op'] && ! empty( $vuln['max'] ) ) ? (string) $vuln['max'] : '';

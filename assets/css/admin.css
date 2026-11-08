@@ -115,7 +115,7 @@
 
 /* ---------- Dashboard widget */
 .sar-widget__period { margin: 0 0 8px; color: #787c82; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
-.sar-widget__tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-bottom: 12px; }
+.sar-widget__tiles { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; margin-bottom: 12px; }
 .sar-widget__tile { display: block; padding: 10px; border-radius: 10px; background: #072418; color: #d1fae5; text-decoration: none; text-align: center; }
 a.sar-widget__tile:hover, a.sar-widget__tile:focus { background: #0d3826; color: #fff; }
 .sar-widget__tile b { display: block; font-size: 20px; line-height: 1.2; color: #6ee7b7; }
@@ -126,3 +126,38 @@ a.sar-widget__tile:hover, a.sar-widget__tile:focus { background: #0d3826; color:
 .sar-widget__score { font-weight: 700; }
 .sar-widget__links { margin: 10px 0 0; }
 @media (max-width: 782px) { .sar-widget__tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* ---------- Vulnerability watch */
+.sar-inline-form { display: inline; margin: 0; }
+.sar-watch .page-title-action { top: -3px; }
+.sar-watch__stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; max-width: 900px; margin: 16px 0 8px; }
+.sar-watch__stats > div { padding: 14px 16px; border-radius: 12px; background: #072418; color: #d1fae5; }
+.sar-watch__stats b { display: block; font-size: 26px; line-height: 1.1; color: #6ee7b7; }
+.sar-watch__stats span { font-size: 12px; }
+.sar-watch__stats .is-hot { background: #7f1d1d; }
+.sar-watch__stats .is-hot b { color: #fecaca; }
+.sar-watch__empty { display: flex; gap: 16px; align-items: flex-start; max-width: 900px; }
+.sar-watch__empty .dashicons { width: 44px; height: 44px; font-size: 28px; border-radius: 12px; background: #d1fae5; color: #0e9f6e; display: grid; place-items: center; }
+.sar-watch__empty h2 { margin: 4px 0 6px; font-size: 16px; }
+.sar-alert { margin: 16px 0; padding: 0; overflow: hidden; border-left: 5px solid #f59e0b; }
+.sar-alert--critical { border-left-color: #dc2626; }
+.sar-alert--high { border-left-color: #f97316; }
+.sar-alert--low { border-left-color: #38bdf8; }
+.sar-alert__head { display: flex; justify-content: space-between; gap: 16px; padding: 16px 20px; }
+.sar-alert__head h2 { margin: 6px 0; font-size: 17px; }
+.sar-alert__tags { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 0; }
+.sar-alert__what { margin: 0; color: #50575e; }
+.sar-alert__count { flex: 0 0 auto; text-align: center; padding: 10px 16px; border-radius: 12px; background: #f6f7f7; }
+.sar-alert__count b { display: block; font-size: 26px; line-height: 1.1; }
+.sar-alert__count span { font-size: 12px; color: #50575e; }
+.sar-alert table.widefat { border-width: 1px 0 0; border-radius: 0; }
+.sar-alert__actions { white-space: nowrap; text-align: right; }
+.sar-alert__actions .button-link { margin-left: 8px; }
+.sar-alert__bulk { padding: 10px 20px; border-top: 1px solid #f0f0f1; background: #fcfcfc; }
+.sar-sev { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; background: #fef3c7; color: #92400e; }
+.sar-sev--critical { background: #fee2e2; color: #b91c1c; }
+.sar-sev--high { background: #ffedd5; color: #c2410c; }
+.sar-sev--low { background: #e0f2fe; color: #0369a1; }
+.sar-sev--kev { background: #7f1d1d; color: #fee2e2; }
+.sar-reason { font-size: 12px; color: #50575e; }
+@media (max-width: 782px) { .sar-watch__stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } .sar-alert__head { flex-direction: column; } }

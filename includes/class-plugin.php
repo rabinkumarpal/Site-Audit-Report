@@ -30,6 +30,7 @@ final class Plugin {
 		Public_Form::register();
 		Service_Bay::register();
 		Seo_Inspector::register();
+		Vuln_Watch::register();
 		Report_Route::register();
 		Privacy::register();
 

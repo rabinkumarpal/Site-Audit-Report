@@ -329,7 +329,7 @@
 				sum.appendChild( el( 'span', 'bay-row__icon', r.type === 'core' ? 'WP' : r.type === 'theme' ? 'TH' : 'PL' ) );
 				var name = el( 'span', 'bay-row__name' );
 				name.appendChild( el( 'strong', '', r.name ) );
-				name.appendChild( el( 'small', '', r.type + ' · ' + r.slug ) );
+				name.appendChild( el( 'small', '', r.type + ' · ' + r.slug + ( r.found_by && r.found_by.indexOf( 'page' ) === -1 && r.found_by.indexOf( 'rest' ) !== -1 ? ' · found via REST API' : '' ) ) );
 				sum.appendChild( name );
 				var ver = el( 'span', 'bay-row__ver', r.version || t.hidden );
 				ver.appendChild( el( 'small', '', r.version ? t.versionSrc + ' ' + r.source : 'not matched' ) );

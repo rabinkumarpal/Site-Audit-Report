@@ -144,10 +144,41 @@ final class Wordpress implements Module {
 			$info['themes'][] = $this->component( 'theme', $slug, $name, $ver, $src );
 		}
 
-		foreach ( array_slice( $assets['plugins'], 0, self::MAX_PLUGINS, true ) as $slug => $vers ) {
+		// Plugins: those the home page loads, plus those that announce REST API
+		// routes. The REST index finds plugins that load nothing on the home page.
+		$rest    = self::rest_plugins( $http, $origin );
+		$plugins = array();
+		foreach ( $assets['plugins'] as $slug => $vers ) {
+			$plugins[ $slug ] = array(
+				'vers'   => $vers,
+				'by'     => array( 'page' ),
+				'verify' => false,
+			);
+		}
+		foreach ( $rest['plugins'] as $slug => $meta ) {
+			if ( isset( $assets['themes'][ $slug ] ) ) {
+				continue; // A theme's own routes, such as bricks/v1.
+			}
+			if ( isset( $plugins[ $slug ] ) ) {
+				$plugins[ $slug ]['by'][] = 'rest';
+			} else {
+				$plugins[ $slug ] = array(
+					'vers'   => array(),
+					'by'     => array( 'rest' ),
+					'verify' => ! $meta['known'],
+				);
+			}
+		}
+		$info['rest'] = array(
+			'open'       => $rest['open'],
+			'namespaces' => count( $rest['namespaces'] ),
+		);
+
+		foreach ( array_slice( $plugins, 0, self::MAX_PLUGINS, true ) as $slug => $meta ) {
 			$name = self::nice( $slug );
 			$ver  = '';
 			$src  = '';
+			$body = '';
 			if ( time() - $started < self::TIME_BUDGET ) {
 				$readme = $http->fetch( $origin . '/wp-content/plugins/' . $slug . '/readme.txt', array( 'max_bytes' => 16384, 'timeout' => 6 ) );
 				$body   = ! empty( $readme['ok'] ) && ! preg_match( '#<html#i', substr( (string) $readme['body'], 0, 500 ) ) ? (string) $readme['body'] : '';
@@ -159,11 +190,15 @@ final class Wordpress implements Module {
 					$src = 'readme.txt';
 				}
 			}
+			// A guessed slug from an unknown REST namespace counts only if its readme exists.
+			if ( $meta['verify'] && ! preg_match( '/^===.+===/m', $body ) ) {
+				continue;
+			}
 			if ( '' === $ver ) {
-				$ver = self::best_ver( $vers, $info['core']['version'] );
+				$ver = self::best_ver( $meta['vers'], $info['core']['version'] );
 				$src = '' !== $ver ? 'asset' : '';
 			}
-			$info['components'][] = $this->component( 'plugin', $slug, $name, $ver, $src );
+			$info['components'][] = $this->component( 'plugin', $slug, $name, $ver, $src, $meta['by'] );
 		}
 
 		// Hardening probes.
@@ -184,10 +219,11 @@ final class Wordpress implements Module {
 	 * @param string $slug    Slug.
 	 * @param string $name    Display name.
 	 * @param string $version Version seen.
-	 * @param string $source  Where the version came from.
+	 * @param string   $source  Where the version came from.
+	 * @param string[] $by      How it was found: page, rest.
 	 * @return array<string,mixed>
 	 */
-	private function component( $type, $slug, $name, $version, $source ) {
+	private function component( $type, $slug, $name, $version, $source, array $by = array( 'page' ) ) {
 		$found  = Vuln_Db::lookup( $type, $slug, $version );
 		$latest = Vuln_Db::latest( $type, $slug );
 		return array(
@@ -196,6 +232,7 @@ final class Wordpress implements Module {
 			'name'     => mb_substr( wp_strip_all_tags( $name ), 0, 80 ),
 			'version'  => $version,
 			'source'   => $source,
+			'found_by' => array_values( array_unique( $by ) ),
 			'latest'   => $latest,
 			'outdated' => '' !== $version && '' !== $latest && version_compare( $version, $latest, '<' ),
 			'checked'  => $found['checked'],
@@ -562,6 +599,145 @@ final class Wordpress implements Module {
 				: __( 'The login page is not at the default address, or is protected.', 'site-audit-report' )
 		);
 
+		return $out;
+	}
+
+	/**
+	 * REST namespaces that map to a plugin slug. Keys are the first path segment.
+	 *
+	 * @return array<string,string>
+	 */
+	public static function namespace_map() {
+		$map = array(
+			'wc'                => 'woocommerce',
+			'wc-admin'          => 'woocommerce',
+			'wc-analytics'      => 'woocommerce',
+			'wc-admin-email'    => 'woocommerce',
+			'wc-telemetry'      => 'woocommerce',
+			'wc-push-notifications' => 'woocommerce',
+			'wccom-site'        => 'woocommerce',
+			'jetpack'           => 'jetpack',
+			'my-jetpack'        => 'jetpack',
+			'videopress'        => 'jetpack',
+			'jetpack-boost'     => 'jetpack-boost',
+			'yoast'             => 'wordpress-seo',
+			'rankmath'          => 'seo-by-rank-math',
+			'aioseo'            => 'all-in-one-seo-pack',
+			'contact-form-7'    => 'contact-form-7',
+			'elementor'         => 'elementor',
+			'elementor-pro'     => 'elementor-pro',
+			'akismet'           => 'akismet',
+			'wordfence'         => 'wordfence',
+			'litespeed'         => 'litespeed-cache',
+			'redirection'       => 'redirection',
+			'wpforms'           => 'wpforms-lite',
+			'gf'                => 'gravityforms',
+			'ninja-forms'       => 'ninja-forms',
+			'nf-submissions'    => 'ninja-forms',
+			'mailpoet'          => 'mailpoet',
+			'wp-statistics'     => 'wp-statistics',
+			'wp-rocket'         => 'wp-rocket',
+			'jet-engine'        => 'jet-engine',
+			'jet-elements'      => 'jet-elements',
+			'regenerate-thumbnails' => 'regenerate-thumbnails',
+			'sg-security'       => 'sg-security',
+			'siteground-optimizer' => 'sg-cachepress',
+			'wpml'              => 'sitepress-multilingual-cms',
+			'tribe'             => 'the-events-calendar',
+			'buddypress'        => 'buddypress',
+			'bbp'               => 'bbpress',
+			'learnpress'        => 'learnpress',
+			'lp'                => 'learnpress',
+			'tutor'             => 'tutor',
+			'llms'              => 'lifterlms',
+			'mc4wp'             => 'mailchimp-for-wp',
+			'updraftplus'       => 'updraftplus',
+			'smush'             => 'wp-smushit',
+			'ithemes-security'  => 'better-wp-security',
+			'solid-security'    => 'better-wp-security',
+			'surecart'          => 'surecart',
+			'suremails'         => 'suremails',
+			'uagb'              => 'ultimate-addons-for-gutenberg',
+			'kb-mailerlite'     => 'kadence-blocks',
+			'kadence-blocks'    => 'kadence-blocks',
+			'generateblocks'    => 'generateblocks',
+			'complianz'         => 'complianz-gdpr',
+			'cky'               => 'cookie-law-info',
+			'fluent-auth'       => 'fluent-security',
+			'fluentform'        => 'fluentform',
+			'fluent-crm'        => 'fluent-crm',
+			'fluent-smtp'       => 'fluent-smtp',
+			'wp-mail-smtp'      => 'wp-mail-smtp',
+			'forminator'        => 'forminator',
+			'give-api'          => 'give',
+			'edd'               => 'easy-digital-downloads',
+			'pmpro'             => 'paid-memberships-pro',
+			'ultimate-member'   => 'ultimate-member',
+			'wp-job-manager'    => 'wp-job-manager',
+			'flying-press'      => 'flying-press',
+			'two-factor'        => 'two-factor',
+			'block-visibility'  => 'block-visibility',
+			'wpcode'            => 'insert-headers-and-footers',
+			'search-filter'     => 'search-filter',
+			'filebird'          => 'filebird',
+			'wpdatatables'      => 'wpdatatables',
+			'mailchimp-for-woocommerce' => 'mailchimp-for-woocommerce',
+		);
+		/**
+		 * Filters the REST namespace to plugin slug map.
+		 *
+		 * @param array $map First namespace segment => plugin slug.
+		 */
+		return (array) apply_filters( 'sar_rest_namespace_map', $map );
+	}
+
+	/**
+	 * Plugins announced by the public REST API index (/wp-json/).
+	 *
+	 * @param \Site_Audit_Report\Http_Client $http   Client.
+	 * @param string                         $origin Origin.
+	 * @return array{open:bool,namespaces:string[],plugins:array<string,array{known:bool,ns:string}>}
+	 */
+	private static function rest_plugins( $http, $origin ) {
+		$out = array(
+			'open'       => false,
+			'namespaces' => array(),
+			'plugins'    => array(),
+		);
+		foreach ( array( $origin . '/wp-json/', $origin . '/?rest_route=/' ) as $url ) {
+			$res = $http->fetch( $url, array( 'max_bytes' => 1048576, 'timeout' => 10 ) );
+			// The namespaces list sits near the top, so a truncated body is still enough.
+			if ( ! empty( $res['ok'] ) && preg_match( '/"namespaces"\s*:\s*\[(.*?)\]/s', (string) $res['body'], $m ) ) {
+				$out['open']       = true;
+				$out['namespaces'] = array_slice( array_map( 'stripslashes', (array) json_decode( '[' . $m[1] . ']', true ) ), 0, 200 );
+				break;
+			}
+		}
+		$core = array( 'oembed', 'wp', 'wp-site-health', 'wp-block-editor', 'wp-abilities', 'batch', 'mcp', 'wpcom', 'wporg', 'idea' );
+		$map  = self::namespace_map();
+		$new  = 0;
+		foreach ( $out['namespaces'] as $ns ) {
+			$first = strtolower( (string) strtok( (string) $ns, '/' ) );
+			if ( '' === $first || in_array( $first, $core, true ) || 0 === strpos( $first, 'wporg' ) ) {
+				continue;
+			}
+			if ( isset( $map[ $first ] ) ) {
+				$out['plugins'][ $map[ $first ] ] = array(
+					'known' => true,
+					'ns'    => $ns,
+				);
+				continue;
+			}
+			// An unknown namespace is often the plugin slug itself; the caller confirms it through readme.txt.
+			$slug = sanitize_key( preg_replace( '/[-_]?v\d+$/', '', $first ) );
+			if ( '' !== $slug && ! isset( $out['plugins'][ $slug ] ) && $new < 8 ) {
+				++$new;
+				$out['plugins'][ $slug ] = array(
+					'known' => false,
+					'ns'    => $ns,
+				);
+			}
+		}
 		return $out;
 	}
 

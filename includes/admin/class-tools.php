@@ -350,6 +350,7 @@ final class Tools {
 						<tr><td><?php esc_html_e( 'Only security checks, form leads or audits your team ran', 'site-audit-report' ); ?></td><td><?php esc_html_e( 'Audits and leads > Source filter (or the Source column)', 'site-audit-report' ); ?></td></tr>
 						<tr><td><?php esc_html_e( 'See who booked a fix and what plan they picked', 'site-audit-report' ); ?></td><td><a href="<?php echo esc_url( add_query_arg( 'lead_status', 'booked', $audits ) ); ?>"><?php esc_html_e( 'Lead filter "Booked a service"', 'site-audit-report' ); ?></a> · <?php esc_html_e( 'open the row, then Notes', 'site-audit-report' ); ?></td></tr>
 						<tr><td><?php esc_html_e( 'Open, download or re-run a report', 'site-audit-report' ); ?></td><td><?php esc_html_e( 'Click the website name; or hover a row for View / Re-run / Inspect SEO', 'site-audit-report' ); ?></td></tr>
+						<tr><td><?php esc_html_e( 'See which leads are exposed to a newly published vulnerability', 'site-audit-report' ); ?></td><td><a href="<?php echo esc_url( admin_url( 'admin.php?page=' . Watch::SLUG ) ); ?>"><?php esc_html_e( 'Site Audits > Vulnerability watch', 'site-audit-report' ); ?></a> · <?php esc_html_e( 'checked daily; the team gets an email digest', 'site-audit-report' ); ?></td></tr>
 						<tr><td><?php esc_html_e( 'Check one page\'s SEO right now', 'site-audit-report' ); ?></td><td><a href="<?php echo esc_url( $seo ); ?>"><?php esc_html_e( 'Site Audits > SEO Inspector', 'site-audit-report' ); ?></a></td></tr>
 						<tr><td><?php esc_html_e( 'Run a full audit yourself (no rate limits, no email)', 'site-audit-report' ); ?></td><td><?php esc_html_e( 'Audits and leads > Run a new audit', 'site-audit-report' ); ?></td></tr>
 						<tr><td><?php esc_html_e( 'Get everything into a spreadsheet', 'site-audit-report' ); ?></td><td><?php esc_html_e( 'Audits and leads > Export CSV', 'site-audit-report' ); ?></td></tr>
@@ -364,6 +365,7 @@ final class Tools {
 					<li><strong><?php esc_html_e( 'Triage daily.', 'site-audit-report' ); ?></strong> <?php esc_html_e( 'Filter Lead = "Booked a service" first; these people asked to be called. Then "New" form leads with low scores, which have the most to gain.', 'site-audit-report' ); ?></li>
 					<li><strong><?php esc_html_e( 'Read before you call.', 'site-audit-report' ); ?></strong> <?php esc_html_e( 'Open the report and note the two or three highest-priority fixes. For Security Check leads, the risk report and chosen plan are in the row.', 'site-audit-report' ); ?></li>
 					<li><strong><?php esc_html_e( 'Update the status.', 'site-audit-report' ); ?></strong> <?php esc_html_e( 'Move each lead through Contacted, Qualified, Won or Lost and keep notes on the row, so the team sees the same picture.', 'site-audit-report' ); ?></li>
+					<li><strong><?php esc_html_e( 'Act on watch alerts.', 'site-audit-report' ); ?></strong> <?php esc_html_e( 'When Vulnerability watch flags a lead, it is the best reason to call: a specific, new, public problem on their site. Re-run their check to confirm, then reach out.', 'site-audit-report' ); ?></li>
 					<li><strong><?php esc_html_e( 'Re-run after the work.', 'site-audit-report' ); ?></strong> <?php esc_html_e( 'Re-run the audit when fixes are live. The report shows the new score next to the previous one, which makes a good case study.', 'site-audit-report' ); ?></li>
 				</ol>
 			</div>
@@ -407,6 +409,8 @@ final class Tools {
 						<tr><td><code>sar_service_modules</code></td><td><?php esc_html_e( 'Change what the Security Check inspection runs.', 'site-audit-report' ); ?></td></tr>
 						<tr><td><code>sar_service_tools</code></td><td><?php esc_html_e( 'Change the fix-plan services, descriptions or prices.', 'site-audit-report' ); ?></td></tr>
 						<tr><td><code>sar_service_booked</code></td><td><?php esc_html_e( 'Send bookings to a CRM, Slack or calendar.', 'site-audit-report' ); ?></td></tr>
+						<tr><td><code>sar_watch_alerts</code></td><td><?php esc_html_e( 'Receive new vulnerability-watch alert IDs (send them to a CRM or Slack).', 'site-audit-report' ); ?></td></tr>
+						<tr><td><code>sar_rest_namespace_map</code></td><td><?php esc_html_e( 'Teach the scanner which REST API namespace belongs to which plugin.', 'site-audit-report' ); ?></td></tr>
 						<tr><td><code>sar_audit_completed</code></td><td><?php esc_html_e( 'React when any audit finishes.', 'site-audit-report' ); ?></td></tr>
 						<tr><td><code>sar_categories</code></td><td><?php esc_html_e( 'Change report categories and their weights.', 'site-audit-report' ); ?></td></tr>
 						<tr><td><code>sar_capability</code></td><td><?php esc_html_e( 'Open these screens to a wider team (default manage_options).', 'site-audit-report' ); ?></td></tr>
@@ -446,6 +450,7 @@ final class Tools {
 			array( __( 'Audits', 'site-audit-report' ), Audits::count( array( 'since' => $since ) ), $audits ),
 			array( __( 'Health checks', 'site-audit-report' ), Audits::count( array( 'since' => $since, 'source' => 'service' ) ), add_query_arg( 'source', 'service', $audits ) ),
 			array( __( 'Bookings', 'site-audit-report' ), Audits::count( array( 'since' => $since, 'lead_status' => 'booked' ) ), add_query_arg( 'lead_status', 'booked', $audits ) ),
+			array( __( 'New alerts', 'site-audit-report' ), \Site_Audit_Report\Vuln_Watch::counts()['new'], admin_url( 'admin.php?page=' . Watch::SLUG ) ),
 			array( __( 'Avg score', 'site-audit-report' ), null === $avg ? '—' : (int) $avg, '' ),
 		);
 		$recent = Audits::query( array( 'limit' => 5 ) );
