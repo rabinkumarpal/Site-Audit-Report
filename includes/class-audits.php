@@ -121,7 +121,7 @@ final class Audits {
 			$args
 		);
 
-		$orderby = in_array( $args['orderby'], array( 'created_at', 'domain', 'score', 'status', 'lead_status', 'business_name', 'email', 'source' ), true ) ? $args['orderby'] : 'created_at';
+		$orderby = in_array( $args['orderby'], array( 'created_at', 'domain', 'score', 'status', 'lead_status', 'business_name', 'email', 'source', 'priority' ), true ) ? $args['orderby'] : 'created_at';
 		$order   = 'ASC' === strtoupper( (string) $args['order'] ) ? 'ASC' : 'DESC';
 
 		list( $where, $values ) = self::where( $args );
@@ -131,7 +131,7 @@ final class Audits {
 
 		return (array) $wpdb->get_results(
 			$wpdb->prepare(
-				'SELECT id, token, site_url, domain, business_name, email, source, status, stage, progress, score, previous_score, lead_status, notes, consent_at, error, created_at, completed_at FROM '
+				'SELECT id, token, site_url, domain, business_name, email, source, status, stage, progress, score, previous_score, previous_at, lead_status, priority, priority_why, notes, consent_at, error, created_at, completed_at FROM '
 				. self::table() . " {$where} ORDER BY {$orderby} {$order}, id DESC LIMIT %d OFFSET %d",
 				$values
 			),
@@ -173,6 +173,10 @@ final class Audits {
 		if ( ! empty( $args['lead_status'] ) ) {
 			$clauses[] = 'lead_status = %s';
 			$values[]  = $args['lead_status'];
+		}
+		if ( ! empty( $args['min_priority'] ) ) {
+			$clauses[] = 'priority >= %d';
+			$values[]  = (int) $args['min_priority'];
 		}
 		if ( ! empty( $args['since'] ) ) {
 			$clauses[] = 'created_at >= %s';

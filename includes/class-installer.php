@@ -14,7 +14,7 @@ defined( 'ABSPATH' ) || exit;
  */
 final class Installer {
 
-	const DB_VERSION       = '4';
+	const DB_VERSION       = '5';
 	const MAINTENANCE_HOOK = 'sar_daily_maintenance';
 
 	/**
@@ -29,6 +29,10 @@ final class Installer {
 		if ( $was && version_compare( (string) $was, '2', '<' ) ) {
 			// Start watching sites that were scanned before the watch existed.
 			Vuln_Watch::backfill();
+		}
+		if ( $was && version_compare( (string) $was, '5', '<' ) ) {
+			// Score existing leads so "Call next" is useful straight away.
+			Lead_Priority::recalculate_all();
 		}
 		if ( false === get_option( Settings::OPTION ) ) {
 			add_option( Settings::OPTION, Settings::defaults(), '', false );
@@ -75,6 +79,7 @@ final class Installer {
 		$alerts  = $wpdb->prefix . 'sar_alerts';
 		$badges  = $wpdb->prefix . 'sar_badges';
 		$mon     = $wpdb->prefix . 'sar_monitors';
+		$proofs  = $wpdb->prefix . 'sar_proofs';
 
 		dbDelta(
 			"CREATE TABLE {$audits} (
@@ -92,6 +97,10 @@ final class Installer {
 				result longtext NULL,
 				score tinyint(3) unsigned NULL,
 				previous_score tinyint(3) unsigned NULL,
+				previous_result longtext NULL,
+				previous_at datetime NULL,
+				priority tinyint(3) unsigned NULL,
+				priority_why varchar(255) NOT NULL DEFAULT '',
 				lead_status varchar(20) NOT NULL DEFAULT 'new',
 				notes longtext NULL,
 				consent_text text NULL,
@@ -109,7 +118,8 @@ final class Installer {
 				KEY domain (domain),
 				KEY email (email),
 				KEY status (status),
-				KEY created_at (created_at)
+				KEY created_at (created_at),
+				KEY priority (priority)
 			) {$charset};"
 		);
 
@@ -218,6 +228,29 @@ final class Installer {
 				KEY checked_at (checked_at)
 			) {$charset};"
 		);
+
+		// Before-and-after proof pages. The data is a frozen copy, so a published case study never changes.
+		dbDelta(
+			"CREATE TABLE {$proofs} (
+				id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+				token char(24) NOT NULL,
+				audit_id bigint(20) unsigned NOT NULL DEFAULT 0,
+				domain varchar(190) NOT NULL,
+				title varchar(191) NOT NULL DEFAULT '',
+				client_label varchar(191) NOT NULL DEFAULT '',
+				anonymize tinyint(1) NOT NULL DEFAULT 0,
+				quote text NULL,
+				quote_by varchar(191) NOT NULL DEFAULT '',
+				indexable tinyint(1) NOT NULL DEFAULT 0,
+				active tinyint(1) NOT NULL DEFAULT 1,
+				data longtext NULL,
+				views bigint(20) unsigned NOT NULL DEFAULT 0,
+				created_at datetime NOT NULL,
+				PRIMARY KEY  (id),
+				UNIQUE KEY token (token),
+				KEY domain (domain)
+			) {$charset};"
+		);
 	}
 
 	/**
@@ -235,5 +268,6 @@ final class Installer {
 		Vuln_Watch::run();
 		Badges::run_due();
 		Monitors::run_due();
+		Lead_Priority::recalculate_all();
 	}
 }

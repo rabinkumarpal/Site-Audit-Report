@@ -83,6 +83,7 @@ final class Audits_Table extends WP_List_Table {
 			'business'    => __( 'Business', 'site-audit-report' ),
 			'email'       => __( 'Email', 'site-audit-report' ),
 			'source'      => __( 'Source', 'site-audit-report' ),
+			'priority'    => __( 'Priority', 'site-audit-report' ),
 			'score'       => __( 'Score', 'site-audit-report' ),
 			'status'      => __( 'Scan', 'site-audit-report' ),
 			'lead_status' => __( 'Lead', 'site-audit-report' ),
@@ -99,6 +100,7 @@ final class Audits_Table extends WP_List_Table {
 			'business'    => array( 'business_name', false ),
 			'email'       => array( 'email', false ),
 			'source'      => array( 'source', false ),
+			'priority'    => array( 'priority', true ),
 			'score'       => array( 'score', false ),
 			'status'      => array( 'status', false ),
 			'lead_status' => array( 'lead_status', false ),
@@ -173,6 +175,7 @@ final class Audits_Table extends WP_List_Table {
 			'search'  => isset( $_GET['s'] ) ? sanitize_text_field( wp_unslash( $_GET['s'] ) ) : '',
 			'source'  => isset( $_GET['source'] ) && isset( self::sources()[ sanitize_key( wp_unslash( $_GET['source'] ) ) ] ) ? sanitize_key( wp_unslash( $_GET['source'] ) ) : '',
 			'lead_status' => isset( $_GET['lead_status'] ) && isset( self::lead_statuses()[ sanitize_key( wp_unslash( $_GET['lead_status'] ) ) ] ) ? sanitize_key( wp_unslash( $_GET['lead_status'] ) ) : '',
+			'min_priority' => isset( $_GET['min_priority'] ) ? min( 100, absint( $_GET['min_priority'] ) ) : 0,
 			'orderby' => isset( $_GET['orderby'] ) ? sanitize_key( wp_unslash( $_GET['orderby'] ) ) : 'created_at',
 			'order'   => isset( $_GET['order'] ) ? sanitize_key( wp_unslash( $_GET['order'] ) ) : 'desc',
 		);
@@ -228,12 +231,34 @@ final class Audits_Table extends WP_List_Table {
 			'view'   => '<a href="' . esc_url( $view ) . '">' . esc_html__( 'View', 'site-audit-report' ) . '</a>',
 			'seo'    => '<a href="' . esc_url( admin_url( 'admin.php?page=' . Tools::SEO_SLUG . '&inspect=' . rawurlencode( (string) $item['site_url'] ) ) ) . '">' . esc_html__( 'Inspect SEO', 'site-audit-report' ) . '</a>',
 			'badge'  => '<a href="' . esc_url( admin_url( 'admin.php?page=' . Badges_Page::SLUG . '&audit=' . $id ) ) . '">' . esc_html__( 'Create badge', 'site-audit-report' ) . '</a>',
+			'proof'  => '<a href="' . esc_url( admin_url( 'admin.php?page=' . Proofs_Page::SLUG . '&domain=' . rawurlencode( (string) $item['domain'] ) ) ) . '">' . esc_html__( 'Proof page', 'site-audit-report' ) . '</a>',
 			'watch'  => '<a href="' . esc_url( admin_url( 'admin.php?page=' . Monitors_Page::SLUG . '&audit=' . $id ) ) . '">' . esc_html__( 'Watch changes', 'site-audit-report' ) . '</a>',
 			'rerun'  => '<a href="' . esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=sar_rerun&audit=' . $id ), 'sar_rerun_' . $id ) ) . '">' . esc_html__( 'Re-run', 'site-audit-report' ) . '</a>',
 			'delete' => '<a class="submitdelete" href="' . esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=sar_delete&audit=' . $id ), 'sar_delete_' . $id ) ) . '">' . esc_html__( 'Delete', 'site-audit-report' ) . '</a>',
 		);
 
 		return '<strong><a class="row-title" href="' . esc_url( $view ) . '">' . esc_html( (string) $item['domain'] ) . '</a></strong>' . $this->row_actions( $actions );
+	}
+
+	/**
+	 * Priority column: score, tier and the reasons.
+	 *
+	 * @param array<string,mixed> $item Row.
+	 * @return string
+	 */
+	protected function column_priority( $item ) {
+		if ( null === $item['priority'] ) {
+			return '<span class="sar-prio sar-prio--none" title="' . esc_attr__( 'Calculated when the audit finishes', 'site-audit-report' ) . '">—</span>';
+		}
+		$tier  = \Site_Audit_Report\Lead_Priority::tier( (int) $item['priority'] );
+		$names = array(
+			'hot'    => __( 'Hot', 'site-audit-report' ),
+			'warm'   => __( 'Warm', 'site-audit-report' ),
+			'cool'   => __( 'Cool', 'site-audit-report' ),
+			'closed' => __( 'Closed', 'site-audit-report' ),
+		);
+		return '<span class="sar-prio sar-prio--' . esc_attr( $tier ) . '">' . (int) $item['priority'] . '</span> <span class="sar-prio__tier">' . esc_html( $names[ $tier ] ) . '</span>'
+			. ( '' !== (string) $item['priority_why'] ? '<br><small class="sar-prio__why">' . esc_html( (string) $item['priority_why'] ) . '</small>' : '' );
 	}
 
 	/**

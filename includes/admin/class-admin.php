@@ -37,6 +37,7 @@ final class Admin {
 		Watch::register();
 		Badges_Page::register();
 		Monitors_Page::register();
+		Proofs_Page::register();
 		add_action( 'admin_menu', array( self::class, 'menu' ) );
 		add_action( 'admin_init', array( self::class, 'register_settings' ) );
 		add_action( 'admin_enqueue_scripts', array( self::class, 'assets' ) );
@@ -184,8 +185,27 @@ final class Admin {
 		$cur_source = isset( $_GET['source'] ) ? sanitize_key( wp_unslash( $_GET['source'] ) ) : '';
 		$cur_lead   = isset( $_GET['lead_status'] ) ? sanitize_key( wp_unslash( $_GET['lead_status'] ) ) : '';
 		$cur_status = isset( $_GET['status'] ) ? sanitize_key( wp_unslash( $_GET['status'] ) ) : '';
+		$cur_prio   = isset( $_GET['min_priority'] ) ? absint( $_GET['min_priority'] ) : 0;
 		// phpcs:enable
 		?>
+		<?php $call_next = \Site_Audit_Report\Lead_Priority::call_next( 5 ); ?>
+		<?php if ( $call_next && ! $prefill ) : ?>
+			<section class="sar-callnext" aria-labelledby="sar-callnext-h">
+				<h2 id="sar-callnext-h"><?php esc_html_e( 'Call next', 'site-audit-report' ); ?> <span><?php esc_html_e( 'open leads with contact details, highest priority first', 'site-audit-report' ); ?></span></h2>
+				<ol>
+					<?php foreach ( $call_next as $lead ) : ?>
+						<li>
+							<span class="sar-prio sar-prio--<?php echo esc_attr( \Site_Audit_Report\Lead_Priority::tier( (int) $lead['priority'] ) ); ?>"><?php echo (int) $lead['priority']; ?></span>
+							<div>
+								<a href="<?php echo esc_url( admin_url( 'admin.php?page=' . self::SLUG . '&audit=' . (int) $lead['id'] ) ); ?>"><strong><?php echo esc_html( $lead['domain'] ); ?></strong></a><?php echo $lead['business_name'] ? ' · ' . esc_html( $lead['business_name'] ) : ''; ?>
+								<small><?php echo esc_html( (string) $lead['priority_why'] ); ?></small>
+							</div>
+							<a class="button button-small" href="<?php echo esc_url( 'mailto:' . $lead['email'] ); ?>"><?php esc_html_e( 'Email', 'site-audit-report' ); ?></a>
+						</li>
+					<?php endforeach; ?>
+				</ol>
+			</section>
+		<?php endif; ?>
 		<details class="sar-admin-new"<?php echo $prefill ? ' open' : ''; ?>>
 			<summary><?php esc_html_e( 'Run a new audit', 'site-audit-report' ); ?></summary>
 			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
@@ -204,6 +224,12 @@ final class Admin {
 			<?php if ( $cur_status ) : ?>
 				<input type="hidden" name="status" value="<?php echo esc_attr( $cur_status ); ?>">
 			<?php endif; ?>
+			<?php // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Keeps the current sort. ?>
+			<?php foreach ( array( 'orderby', 'order' ) as $keep ) : ?>
+				<?php if ( isset( $_GET[ $keep ] ) ) : ?>
+					<input type="hidden" name="<?php echo esc_attr( $keep ); ?>" value="<?php echo esc_attr( sanitize_key( wp_unslash( $_GET[ $keep ] ) ) ); ?>">
+				<?php endif; ?>
+			<?php endforeach; ?>
 			<label class="screen-reader-text" for="sar-filter-source"><?php esc_html_e( 'Filter by source', 'site-audit-report' ); ?></label>
 			<select name="source" id="sar-filter-source">
 				<option value=""><?php esc_html_e( 'All sources', 'site-audit-report' ); ?></option>
@@ -218,8 +244,14 @@ final class Admin {
 					<option value="<?php echo esc_attr( $key ); ?>" <?php selected( $cur_lead, $key ); ?>><?php echo esc_html( $label ); ?></option>
 				<?php endforeach; ?>
 			</select>
+			<label class="screen-reader-text" for="sar-filter-prio"><?php esc_html_e( 'Filter by priority', 'site-audit-report' ); ?></label>
+			<select name="min_priority" id="sar-filter-prio">
+				<option value="0"><?php esc_html_e( 'Any priority', 'site-audit-report' ); ?></option>
+				<option value="70" <?php selected( $cur_prio, 70 ); ?>><?php esc_html_e( 'Hot leads (70+)', 'site-audit-report' ); ?></option>
+				<option value="40" <?php selected( $cur_prio, 40 ); ?>><?php esc_html_e( 'Warm and hot (40+)', 'site-audit-report' ); ?></option>
+			</select>
 			<?php submit_button( __( 'Filter', 'site-audit-report' ), '', '', false ); ?>
-			<?php if ( $cur_source || $cur_lead ) : ?>
+			<?php if ( $cur_source || $cur_lead || $cur_prio ) : ?>
 				<a class="button-link" href="<?php echo esc_url( admin_url( 'admin.php?page=' . self::SLUG ) ); ?>"><?php esc_html_e( 'Clear filters', 'site-audit-report' ); ?></a>
 			<?php endif; ?>
 			<?php $table->search_box( __( 'Search audits', 'site-audit-report' ), 'sar-search' ); ?>
@@ -557,6 +589,9 @@ final class Admin {
 					'state'          => null,
 					'result'         => null,
 					'previous_score' => $audit['score'],
+					// Kept so a before-and-after proof page can compare the two runs.
+					'previous_result' => 'complete' === $audit['status'] ? $audit['result'] : $audit['previous_result'],
+					'previous_at'     => 'complete' === $audit['status'] ? $audit['completed_at'] : $audit['previous_at'],
 					'score'          => null,
 					'error'          => '',
 					'attempts'       => 0,
@@ -603,6 +638,7 @@ final class Admin {
 				'notes'       => isset( $_POST['notes'] ) ? sanitize_textarea_field( wp_unslash( $_POST['notes'] ) ) : '',
 			)
 		);
+		\Site_Audit_Report\Lead_Priority::recalc( $id );
 		self::redirect(
 			array(
 				'audit'      => $id,

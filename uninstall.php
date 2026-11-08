@@ -15,7 +15,7 @@ defined( 'WP_UNINSTALL_PLUGIN' ) || exit;
 function sar_uninstall_site() {
 	global $wpdb;
 
-	foreach ( array( 'sar_audits', 'sar_rate_limits', 'sar_inventory', 'sar_alerts', 'sar_badges', 'sar_monitors' ) as $table ) {
+	foreach ( array( 'sar_audits', 'sar_rate_limits', 'sar_inventory', 'sar_alerts', 'sar_badges', 'sar_monitors', 'sar_proofs' ) as $table ) {
 		$name = $wpdb->prefix . $table;
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table names cannot be placeholders.
 		$wpdb->query( "DROP TABLE IF EXISTS `{$name}`" );

@@ -32,6 +32,8 @@ final class Plugin {
 		Seo_Inspector::register();
 		Vuln_Watch::register();
 		Badges::register();
+		Proofs::register();
+		Lead_Priority::register();
 		Report_Route::register();
 		Privacy::register();
 

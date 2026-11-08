@@ -354,6 +354,8 @@ final class Tools {
 						<tr><td><?php esc_html_e( 'Give a client a self-checking "Secured by" badge for their site', 'site-audit-report' ); ?></td><td><a href="<?php echo esc_url( admin_url( 'admin.php?page=' . Badges_Page::SLUG ) ); ?>"><?php esc_html_e( 'Site Audits > Trust badges', 'site-audit-report' ); ?></a> · <?php esc_html_e( 'or "Create badge" on any audit row; re-checked weekly', 'site-audit-report' ); ?></td></tr>
 						<tr><td><?php esc_html_e( 'Hear when a client site changes (noindex, title, plugins, certificate…)', 'site-audit-report' ); ?></td><td><a href="<?php echo esc_url( admin_url( 'admin.php?page=' . Monitors_Page::SLUG ) ); ?>"><?php esc_html_e( 'Site Audits > Change watch', 'site-audit-report' ); ?></a> · <?php esc_html_e( 'weekly, with an email digest', 'site-audit-report' ); ?></td></tr>
 						<tr><td><?php esc_html_e( 'Check a page\'s accessibility', 'site-audit-report' ); ?></td><td><?php esc_html_e( 'SEO Inspector > Accessibility tab, or the Accessibility section of a full audit', 'site-audit-report' ); ?></td></tr>
+						<tr><td><?php esc_html_e( 'Know which lead to call first', 'site-audit-report' ); ?></td><td><?php esc_html_e( 'Audits and leads > "Call next" panel, the Priority column and the Priority filter (also on the dashboard)', 'site-audit-report' ); ?></td></tr>
+						<tr><td><?php esc_html_e( 'Show a client\'s improvement as a public case study', 'site-audit-report' ); ?></td><td><a href="<?php echo esc_url( admin_url( 'admin.php?page=' . Proofs_Page::SLUG ) ); ?>"><?php esc_html_e( 'Site Audits > Proof pages', 'site-audit-report' ); ?></a> · <?php esc_html_e( 'needs two audits of the site; re-runs keep the earlier result', 'site-audit-report' ); ?></td></tr>
 						<tr><td><?php esc_html_e( 'Check one page\'s SEO right now', 'site-audit-report' ); ?></td><td><a href="<?php echo esc_url( $seo ); ?>"><?php esc_html_e( 'Site Audits > SEO Inspector', 'site-audit-report' ); ?></a></td></tr>
 						<tr><td><?php esc_html_e( 'Run a full audit yourself (no rate limits, no email)', 'site-audit-report' ); ?></td><td><?php esc_html_e( 'Audits and leads > Run a new audit', 'site-audit-report' ); ?></td></tr>
 						<tr><td><?php esc_html_e( 'Get everything into a spreadsheet', 'site-audit-report' ); ?></td><td><?php esc_html_e( 'Audits and leads > Export CSV', 'site-audit-report' ); ?></td></tr>
@@ -469,6 +471,16 @@ final class Tools {
 					</<?php echo esc_html( $tag ); ?>>
 				<?php endforeach; ?>
 			</div>
+			<?php $next = \Site_Audit_Report\Lead_Priority::call_next( 3 ); ?>
+			<?php if ( $next ) : ?>
+				<p class="sar-widget__period"><?php esc_html_e( 'Call next', 'site-audit-report' ); ?></p>
+				<ul class="sar-widget__next">
+					<?php foreach ( $next as $lead ) : ?>
+						<li><span class="sar-prio sar-prio--<?php echo esc_attr( \Site_Audit_Report\Lead_Priority::tier( (int) $lead['priority'] ) ); ?>"><?php echo (int) $lead['priority']; ?></span> <a href="<?php echo esc_url( add_query_arg( 'audit', (int) $lead['id'], $audits ) ); ?>"><?php echo esc_html( (string) $lead['domain'] ); ?></a><br><small><?php echo esc_html( (string) $lead['priority_why'] ); ?></small></li>
+					<?php endforeach; ?>
+				</ul>
+				<p class="sar-widget__period"><?php esc_html_e( 'Latest audits', 'site-audit-report' ); ?></p>
+			<?php endif; ?>
 			<?php if ( $recent ) : ?>
 				<table class="sar-widget__table">
 					<tbody>

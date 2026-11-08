@@ -4,7 +4,7 @@ Tags: seo audit, website audit, lead generation, pagespeed, site report
 Requires at least: 6.3
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.5.0
+Stable tag: 1.6.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -144,6 +144,26 @@ In the SEO Inspector (front end or wp-admin), click "+ Compare with a competitor
 
 The page address updates to `?inspect=<you>&vs=<them>`, so a comparison can be shared or bookmarked. If the competitor's page cannot be read, your own report still shows.
 
+== Before-and-after proof pages ==
+
+Turn two audits of the same website into a public case study under Site Audits > Proof pages (or "Proof page" on any audit row). Re-running an audit now keeps the earlier result, so every re-run gives you a "before".
+
+* Pick the site, then the before and after results (oldest and newest are preselected). A private preview shows what was fixed, what got worse and what is still open.
+* The public page shows the score change, a fact strip (issues fixed, areas improved, days between audits), before and after bars for each area, every fixed issue grouped by area, an optional client quote, and your call to action.
+* Only improvements are shown publicly. "Hide the website address" shows just the client name you enter. Pages are noindex unless you allow indexing, and creating one requires confirming the client agreed to publish.
+* The numbers are frozen when the page is created, so later re-runs or the retention clean-up never change a published case study. Unpublish or delete at any time.
+
+== Lead priority ==
+
+Every completed audit gets a priority from 0 to 100 with the reasons behind it, so the team knows who to call first:
+
+* Intent: booked a fix, qualified, in conversation, or asked for a report.
+* Need: how low the audit score is.
+* Urgency: new vulnerability-watch alerts, actively exploited (CISA) or high-risk holes, visible security problems.
+* Freshness: how recently the lead came in.
+
+Leads without contact details are capped at 35, and won or lost leads drop to 0. Audits and leads shows a sortable Priority column (Hot 70+, Warm 40+, Cool), a priority filter and a "Call next" panel with the top five reachable open leads, also shown on the dashboard. Priorities update when an audit finishes, a lead status changes, a fix is booked or a watch alert arrives, and every day.
+
 == Limits and safeguards ==
 
 Each of these is a setting unless noted.
@@ -211,6 +231,11 @@ Actions: `sar_audit_completed` (audit record, report data).
 Use `$context->http` for any request to an address taken from a scanned site. It applies the private-network protection; `wp_remote_get()` does not. Requests to a fixed vendor API can use the normal HTTP functions.
 
 == Changelog ==
+
+= 1.6.0 =
+* New: Before-and-after proof pages, public case studies built from two audit runs, frozen, improvement-only, optionally anonymous, with consent confirmation.
+* New: Lead priority, a 0–100 score with reasons, Priority column and filter, "Call next" panel and dashboard list.
+* Changed: re-running an audit keeps the previous full result and date (shown as the "before" for proof pages).
 
 = 1.5.0 =
 * New: You vs. a competitor in the SEO Inspector: 18-point scoreboard, "where they beat you" with fixes (including missing schema types), "where you lead", side-by-side table, detail switch and shareable links.
