@@ -2,7 +2,7 @@
 /**
  * SEO Inspector markup. The script fills in the report.
  *
- * Variables: $uid, $examples, $style, $cta_url, $cta_text.
+ * Variables: $uid, $examples, $style, $cta_url, $cta_text, $compact.
  *
  * @package Site_Audit_Report
  */
@@ -20,7 +20,7 @@ $sar_tabs = array(
 	'schema'   => __( 'Schema', 'site-audit-report' ),
 );
 ?>
-<div class="sar-bay sar-seo" id="<?php echo esc_attr( $uid ); ?>" data-state="idle"<?php echo $style ? ' style="' . esc_attr( $style ) . '"' : ''; ?>>
+<div class="sar-bay sar-seo<?php echo $compact ? ' sar-seo--compact' : ''; ?>" id="<?php echo esc_attr( $uid ); ?>" data-state="idle"<?php echo $style ? ' style="' . esc_attr( $style ) . '"' : ''; ?>>
 
 	<section class="bay-hero" id="seo-scan">
 		<div class="bay-wrap bay-hero__grid">
@@ -76,6 +76,9 @@ $sar_tabs = array(
 					<div><dt><?php esc_html_e( 'Images', 'site-audit-report' ); ?></dt><dd data-spec="images">—</dd></div>
 					<div><dt><?php esc_html_e( 'Links in / out', 'site-audit-report' ); ?></dt><dd data-spec="links">—</dd></div>
 				</dl>
+				<?php if ( $compact && is_admin() ) : ?>
+					<a class="bay-console__next seo-queue" href="#" data-bind="queueFull" hidden><span><?php esc_html_e( 'Queue a full audit of this site', 'site-audit-report' ); ?></span><span aria-hidden="true">→</span></a>
+				<?php endif; ?>
 				<a class="bay-console__next" href="#seo-report" data-bind="toReport" hidden><span><?php esc_html_e( 'Open the full breakdown', 'site-audit-report' ); ?></span><span aria-hidden="true">↓</span></a>
 			</div>
 		</div>

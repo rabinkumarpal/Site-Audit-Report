@@ -163,6 +163,8 @@ Use `$context->http` for any request to an address taken from a scanned site. It
 * New: Service Bay shortcode `[site_audit_service]`: WordPress vulnerability check, risk report, priced fix plan and booking.
 * New: WordPress health module (core, theme and plugin versions vs WPVulnerability.net and CISA KEV, plus hardening checks), also used in full audits.
 * New: "Booked a service" lead status and Service Bay settings.
+* New admin screens: Site Audits > SEO Inspector (runs the inspector in wp-admin, with "Queue a full audit"), Site Audits > Guide (live setup checklist, the three tools and their shortcodes, where results go, lead workflow, hooks) and a Site Audits dashboard widget.
+* New: Source column and Source / Lead status filters in Audits and leads, plus an "Inspect SEO" row action.
 * New: SEO Inspector shortcode `[site_audit_seo]`: instant single-page report with Insights, Meta, Headers, Images, Links and Schema tabs.
 
 = 1.0.0 =

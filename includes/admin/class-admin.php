@@ -33,6 +33,7 @@ final class Admin {
 	 * @return void
 	 */
 	public static function register() {
+		Tools::register();
 		add_action( 'admin_menu', array( self::class, 'menu' ) );
 		add_action( 'admin_init', array( self::class, 'register_settings' ) );
 		add_action( 'admin_enqueue_scripts', array( self::class, 'assets' ) );
@@ -174,12 +175,20 @@ final class Admin {
 		<a class="page-title-action" href="<?php echo esc_url( $export ); ?>"><?php esc_html_e( 'Export CSV', 'site-audit-report' ); ?></a>
 		<hr class="wp-header-end">
 
-		<details class="sar-admin-new">
+		<?php
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only filters and a prefill value.
+		$prefill    = isset( $_GET['new'] ) ? esc_url_raw( wp_unslash( $_GET['new'] ) ) : '';
+		$cur_source = isset( $_GET['source'] ) ? sanitize_key( wp_unslash( $_GET['source'] ) ) : '';
+		$cur_lead   = isset( $_GET['lead_status'] ) ? sanitize_key( wp_unslash( $_GET['lead_status'] ) ) : '';
+		$cur_status = isset( $_GET['status'] ) ? sanitize_key( wp_unslash( $_GET['status'] ) ) : '';
+		// phpcs:enable
+		?>
+		<details class="sar-admin-new"<?php echo $prefill ? ' open' : ''; ?>>
 			<summary><?php esc_html_e( 'Run a new audit', 'site-audit-report' ); ?></summary>
 			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 				<input type="hidden" name="action" value="sar_create">
 				<?php wp_nonce_field( 'sar_create' ); ?>
-				<p><label><?php esc_html_e( 'Website address', 'site-audit-report' ); ?> <input type="text" name="sar_url" required class="regular-text" placeholder="example.com"></label></p>
+				<p><label><?php esc_html_e( 'Website address', 'site-audit-report' ); ?> <input type="text" name="sar_url" required class="regular-text" placeholder="example.com" value="<?php echo esc_attr( $prefill ); ?>"></label></p>
 				<p><label><?php esc_html_e( 'Business name', 'site-audit-report' ); ?> <input type="text" name="sar_business" class="regular-text"></label></p>
 				<p class="description"><?php esc_html_e( 'Team audits skip the public rate limits. No email is sent.', 'site-audit-report' ); ?></p>
 				<?php submit_button( __( 'Queue audit', 'site-audit-report' ), 'primary', 'submit', false ); ?>
@@ -187,8 +196,29 @@ final class Admin {
 		</details>
 
 		<?php $table->views(); ?>
-		<form method="get">
+		<form method="get" class="sar-admin-filters">
 			<input type="hidden" name="page" value="<?php echo esc_attr( self::SLUG ); ?>">
+			<?php if ( $cur_status ) : ?>
+				<input type="hidden" name="status" value="<?php echo esc_attr( $cur_status ); ?>">
+			<?php endif; ?>
+			<label class="screen-reader-text" for="sar-filter-source"><?php esc_html_e( 'Filter by source', 'site-audit-report' ); ?></label>
+			<select name="source" id="sar-filter-source">
+				<option value=""><?php esc_html_e( 'All sources', 'site-audit-report' ); ?></option>
+				<?php foreach ( Audits_Table::sources() as $key => $label ) : ?>
+					<option value="<?php echo esc_attr( $key ); ?>" <?php selected( $cur_source, $key ); ?>><?php echo esc_html( $label ); ?></option>
+				<?php endforeach; ?>
+			</select>
+			<label class="screen-reader-text" for="sar-filter-lead"><?php esc_html_e( 'Filter by lead status', 'site-audit-report' ); ?></label>
+			<select name="lead_status" id="sar-filter-lead">
+				<option value=""><?php esc_html_e( 'All lead statuses', 'site-audit-report' ); ?></option>
+				<?php foreach ( Audits_Table::lead_statuses() as $key => $label ) : ?>
+					<option value="<?php echo esc_attr( $key ); ?>" <?php selected( $cur_lead, $key ); ?>><?php echo esc_html( $label ); ?></option>
+				<?php endforeach; ?>
+			</select>
+			<?php submit_button( __( 'Filter', 'site-audit-report' ), '', '', false ); ?>
+			<?php if ( $cur_source || $cur_lead ) : ?>
+				<a class="button-link" href="<?php echo esc_url( admin_url( 'admin.php?page=' . self::SLUG ) ); ?>"><?php esc_html_e( 'Clear filters', 'site-audit-report' ); ?></a>
+			<?php endif; ?>
 			<?php $table->search_box( __( 'Search audits', 'site-audit-report' ), 'sar-search' ); ?>
 		</form>
 		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">

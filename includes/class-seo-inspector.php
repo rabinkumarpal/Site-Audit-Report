@@ -64,6 +64,7 @@ final class Seo_Inspector {
 				'offset'    => '',
 				'cta_url'   => '',
 				'cta_label' => '',
+				'compact'   => '',
 			),
 			(array) $atts,
 			'site_audit_seo'
@@ -84,6 +85,7 @@ final class Seo_Inspector {
 				'param'   => self::PARAM,
 				'prefill' => $prefill,
 				'home'    => home_url( '/' ),
+				'newUrl'  => ! empty( $atts['compact'] ) && is_admin() ? admin_url( 'admin.php?page=site-audit-report&new=' ) : '',
 			)
 		);
 
@@ -92,6 +94,7 @@ final class Seo_Inspector {
 		$offset   = '' !== (string) $atts['offset'] ? absint( $atts['offset'] ) : null;
 		$style    = null !== $offset ? '--bay-rail-top:' . ( $offset + 26 ) . 'px' : '';
 		$cta_url  = (string) $atts['cta_url'];
+		$compact  = ! empty( $atts['compact'] );
 		$cta_text = '' !== (string) $atts['cta_label'] ? (string) $atts['cta_label'] : __( 'Get the full site audit', 'site-audit-report' );
 
 		ob_start();

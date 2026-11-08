@@ -64,3 +64,65 @@
 .sar-admin-report .sar-top__inner {
 	max-width: none;
 }
+
+/* ---------- Filters and source badges */
+.sar-admin-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 8px 0; }
+.sar-admin-filters .search-box { margin-left: auto; }
+.sar-source { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; line-height: 1.6; background: #f0f0f1; color: #50575e; white-space: nowrap; }
+.sar-source--service { background: #e7f6ef; color: #0e7a55; }
+.sar-source--form { background: #eef2ff; color: #3b49b8; }
+.sar-source--admin { background: #fcf3e2; color: #8a5a00; }
+.column-source { width: 9em; }
+
+/* ---------- SEO Inspector page */
+.sar-admin-seo .sar-bay { margin-top: 8px; }
+.sar-admin-seo .bay-plate { max-width: none; }
+
+/* ---------- Guide */
+.sar-guide { max-width: 1180px; }
+.sar-guide h1 { display: flex; align-items: center; gap: 10px; }
+.sar-guide__ver { padding: 2px 8px; border-radius: 999px; background: #072418; color: #6ee7b7; font-size: 12px; font-weight: 600; }
+.sar-guide__lead { font-size: 15px; color: #50575e; margin: 4px 0 16px; }
+.sar-guide h2 { margin: 32px 0 12px; font-size: 20px; scroll-margin-top: 48px; }
+.sar-guide__nav { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px; border: 1px solid #dcdcde; border-radius: 12px; background: #fff; position: sticky; top: 40px; z-index: 5; }
+.sar-guide__nav a { padding: 6px 12px; border-radius: 8px; text-decoration: none; font-weight: 600; color: #1d2327; }
+.sar-guide__nav a:hover, .sar-guide__nav a:focus { background: #072418; color: #6ee7b7; box-shadow: none; }
+.sar-card { padding: 18px 20px; border: 1px solid #dcdcde; border-radius: 14px; background: #fff; }
+.sar-card > table.widefat { border-radius: 8px; overflow: hidden; }
+.sar-check { margin: 0; }
+.sar-check li { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; margin: 0; border-top: 1px solid #f0f0f1; }
+.sar-check li:first-child { border-top: 0; padding-top: 0; }
+.sar-check li > div { flex: 1; }
+.sar-check p { margin: 2px 0 0; color: #50575e; }
+.sar-check__icon { flex: 0 0 26px; height: 26px; border-radius: 8px; display: grid; place-items: center; font-weight: 700; }
+.sar-check--ok .sar-check__icon { background: #d1fae5; color: #0e9f6e; }
+.sar-check--todo .sar-check__icon { background: #fef3c7; color: #b45309; }
+.sar-check--opt .sar-check__icon { background: #f0f0f1; color: #787c82; }
+.sar-tools { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 16px; }
+.sar-tool { display: flex; flex-direction: column; gap: 12px; scroll-margin-top: 90px; }
+.sar-tool p { margin: 0; }
+.sar-tool__head { display: flex; align-items: center; gap: 10px; }
+.sar-tool__head h3 { margin: 0; font-size: 16px; }
+.sar-tool__head .dashicons { width: 36px; height: 36px; font-size: 20px; line-height: 36px; text-align: center; border-radius: 10px; background: #072418; color: #6ee7b7; }
+.sar-code { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 8px 8px 12px; border-radius: 10px; background: #f6f7f7; }
+.sar-code code { background: none; padding: 0; font-size: 13px; }
+.sar-attrs td, .sar-attrs th { font-size: 12.5px; }
+.sar-tool__facts { font-size: 13px; }
+.sar-tool > p:last-child { margin-top: auto; }
+.sar-page { display: block; }
+.sar-steps ol { margin: 0 0 0 20px; }
+.sar-steps li { margin-bottom: 10px; }
+
+/* ---------- Dashboard widget */
+.sar-widget__period { margin: 0 0 8px; color: #787c82; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+.sar-widget__tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-bottom: 12px; }
+.sar-widget__tile { display: block; padding: 10px; border-radius: 10px; background: #072418; color: #d1fae5; text-decoration: none; text-align: center; }
+a.sar-widget__tile:hover, a.sar-widget__tile:focus { background: #0d3826; color: #fff; }
+.sar-widget__tile b { display: block; font-size: 20px; line-height: 1.2; color: #6ee7b7; }
+.sar-widget__tile span { font-size: 11px; }
+.sar-widget__table { width: 100%; border-collapse: collapse; }
+.sar-widget__table td { padding: 8px 4px; border-top: 1px solid #f0f0f1; vertical-align: top; }
+.sar-widget__table td:nth-child(2), .sar-widget__table td:nth-child(3) { text-align: right; white-space: nowrap; }
+.sar-widget__score { font-weight: 700; }
+.sar-widget__links { margin: 10px 0 0; }
+@media (max-width: 782px) { .sar-widget__tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

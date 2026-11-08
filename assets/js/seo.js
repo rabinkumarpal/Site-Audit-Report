@@ -255,6 +255,10 @@
 			spec( 'images', d.images.total + ( d.images.missing_alt ? ' · ' + d.images.missing_alt + ' no alt' : '' ) );
 			spec( 'links', d.links.internal + ' / ' + d.links.external );
 			bind( 'toReport' ).hidden = false;
+			if ( bind( 'queueFull' ) && cfg.newUrl ) {
+				bind( 'queueFull' ).href = cfg.newUrl + encodeURIComponent( p.final_url );
+				bind( 'queueFull' ).hidden = false;
+			}
 
 			bind( 'empty' ).hidden = true;
 			bind( 'report' ).hidden = false;

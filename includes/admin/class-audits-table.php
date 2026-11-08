@@ -51,6 +51,29 @@ final class Audits_Table extends WP_List_Table {
 	}
 
 	/**
+	 * Where audits come from.
+	 *
+	 * @return array<string,string>
+	 */
+	public static function sources() {
+		return array(
+			'form'    => __( 'Audit form', 'site-audit-report' ),
+			'service' => __( 'Service Bay', 'site-audit-report' ),
+			'admin'   => __( 'Team', 'site-audit-report' ),
+		);
+	}
+
+	/**
+	 * Label for a source.
+	 *
+	 * @param string $source Source.
+	 * @return string
+	 */
+	public static function source_label( $source ) {
+		return self::sources()[ $source ] ?? ucfirst( $source );
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	public function get_columns() {
@@ -59,6 +82,7 @@ final class Audits_Table extends WP_List_Table {
 			'domain'      => __( 'Website', 'site-audit-report' ),
 			'business'    => __( 'Business', 'site-audit-report' ),
 			'email'       => __( 'Email', 'site-audit-report' ),
+			'source'      => __( 'Source', 'site-audit-report' ),
 			'score'       => __( 'Score', 'site-audit-report' ),
 			'status'      => __( 'Scan', 'site-audit-report' ),
 			'lead_status' => __( 'Lead', 'site-audit-report' ),
@@ -74,6 +98,7 @@ final class Audits_Table extends WP_List_Table {
 			'domain'      => array( 'domain', false ),
 			'business'    => array( 'business_name', false ),
 			'email'       => array( 'email', false ),
+			'source'      => array( 'source', false ),
 			'score'       => array( 'score', false ),
 			'status'      => array( 'status', false ),
 			'lead_status' => array( 'lead_status', false ),
@@ -146,6 +171,8 @@ final class Audits_Table extends WP_List_Table {
 		$args = array(
 			'status'  => isset( $_GET['status'] ) ? sanitize_key( wp_unslash( $_GET['status'] ) ) : '',
 			'search'  => isset( $_GET['s'] ) ? sanitize_text_field( wp_unslash( $_GET['s'] ) ) : '',
+			'source'  => isset( $_GET['source'] ) && isset( self::sources()[ sanitize_key( wp_unslash( $_GET['source'] ) ) ] ) ? sanitize_key( wp_unslash( $_GET['source'] ) ) : '',
+			'lead_status' => isset( $_GET['lead_status'] ) && isset( self::lead_statuses()[ sanitize_key( wp_unslash( $_GET['lead_status'] ) ) ] ) ? sanitize_key( wp_unslash( $_GET['lead_status'] ) ) : '',
 			'orderby' => isset( $_GET['orderby'] ) ? sanitize_key( wp_unslash( $_GET['orderby'] ) ) : 'created_at',
 			'order'   => isset( $_GET['order'] ) ? sanitize_key( wp_unslash( $_GET['order'] ) ) : 'desc',
 		);
@@ -199,11 +226,23 @@ final class Audits_Table extends WP_List_Table {
 
 		$actions = array(
 			'view'   => '<a href="' . esc_url( $view ) . '">' . esc_html__( 'View', 'site-audit-report' ) . '</a>',
+			'seo'    => '<a href="' . esc_url( admin_url( 'admin.php?page=' . Tools::SEO_SLUG . '&inspect=' . rawurlencode( (string) $item['site_url'] ) ) ) . '">' . esc_html__( 'Inspect SEO', 'site-audit-report' ) . '</a>',
 			'rerun'  => '<a href="' . esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=sar_rerun&audit=' . $id ), 'sar_rerun_' . $id ) ) . '">' . esc_html__( 'Re-run', 'site-audit-report' ) . '</a>',
 			'delete' => '<a class="submitdelete" href="' . esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=sar_delete&audit=' . $id ), 'sar_delete_' . $id ) ) . '">' . esc_html__( 'Delete', 'site-audit-report' ) . '</a>',
 		);
 
 		return '<strong><a class="row-title" href="' . esc_url( $view ) . '">' . esc_html( (string) $item['domain'] ) . '</a></strong>' . $this->row_actions( $actions );
+	}
+
+	/**
+	 * Source column.
+	 *
+	 * @param array<string,mixed> $item Row.
+	 * @return string
+	 */
+	protected function column_source( $item ) {
+		$source = (string) $item['source'];
+		return '<span class="sar-source sar-source--' . esc_attr( $source ) . '">' . esc_html( self::source_label( $source ) ) . '</span>';
 	}
 
 	/**

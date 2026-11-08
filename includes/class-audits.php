@@ -121,7 +121,7 @@ final class Audits {
 			$args
 		);
 
-		$orderby = in_array( $args['orderby'], array( 'created_at', 'domain', 'score', 'status', 'lead_status', 'business_name', 'email' ), true ) ? $args['orderby'] : 'created_at';
+		$orderby = in_array( $args['orderby'], array( 'created_at', 'domain', 'score', 'status', 'lead_status', 'business_name', 'email', 'source' ), true ) ? $args['orderby'] : 'created_at';
 		$order   = 'ASC' === strtoupper( (string) $args['order'] ) ? 'ASC' : 'DESC';
 
 		list( $where, $values ) = self::where( $args );
@@ -155,7 +155,7 @@ final class Audits {
 	/**
 	 * Builds a WHERE clause.
 	 *
-	 * @param array<string,mixed> $args status, search.
+	 * @param array<string,mixed> $args status, source, lead_status, since, search.
 	 * @return array{0:string,1:array<int,mixed>}
 	 */
 	private static function where( array $args ) {
@@ -165,6 +165,18 @@ final class Audits {
 		if ( ! empty( $args['status'] ) ) {
 			$clauses[] = 'status = %s';
 			$values[]  = $args['status'];
+		}
+		if ( ! empty( $args['source'] ) ) {
+			$clauses[] = 'source = %s';
+			$values[]  = $args['source'];
+		}
+		if ( ! empty( $args['lead_status'] ) ) {
+			$clauses[] = 'lead_status = %s';
+			$values[]  = $args['lead_status'];
+		}
+		if ( ! empty( $args['since'] ) ) {
+			$clauses[] = 'created_at >= %s';
+			$values[]  = $args['since'];
 		}
 		if ( ! empty( $args['search'] ) ) {
 			$like      = '%' . $wpdb->esc_like( $args['search'] ) . '%';

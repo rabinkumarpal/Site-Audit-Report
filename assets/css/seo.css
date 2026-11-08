@@ -167,6 +167,21 @@
 .seo-cta__title { margin: 8px 0 0; max-width: 640px; font-size: 28px; line-height: 1.15; font-weight: 800; letter-spacing: -.02em; color: #fff; }
 .seo-cta__title em { font-family: var(--bay-serif); font-style: italic; font-weight: 400; color: var(--bay-glow); }
 
+/* ---------- Compact mode (wp-admin) */
+.seo-queue { background: rgba(255, 255, 255, .08); color: var(--bay-mint) !important; }
+.seo-queue:hover { background: rgba(255, 255, 255, .16); }
+.sar-seo--compact { background: transparent; }
+.sar-seo--compact .bay-hero { padding: 24px 0 32px; background: none; border: 0; }
+.sar-seo--compact .bay-wrap { padding: 0; max-width: none; }
+.sar-seo--compact .bay-h1 { font-size: 30px; margin-bottom: 12px; }
+.sar-seo--compact .bay-lead { font-size: 15px; line-height: 1.6; margin-bottom: 20px; }
+.sar-seo--compact .bay-pill { display: none; }
+.sar-seo--compact .bay-hero__grid { gap: 32px; align-items: center; }
+.sar-seo--compact .bay-sec { padding: 32px 0 48px; border: 0; background: transparent; }
+.sar-seo--compact .bay-head { margin-bottom: 24px; }
+.sar-seo--compact .bay-h2 { font-size: 28px; }
+.sar-seo--compact .bay-plate__input { border: 0 !important; }
+
 /* ---------- Responsive */
 @media (max-width: 1199px) {
 	.seo-grid2 { grid-template-columns: 1fr; }
