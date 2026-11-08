@@ -130,7 +130,7 @@ final class Crawler {
 	 * @param Http_Client $http   Client.
 	 * @return array<string,mixed>
 	 */
-	private static function read_robots( $origin, Http_Client $http ) {
+	public static function read_robots( $origin, Http_Client $http ) {
 		$response = $http->fetch( $origin . '/robots.txt', array( 'max_bytes' => 512000 ) );
 		$robots   = array(
 			'checked'    => empty( $response['error'] ) && ! Http_Client::looks_blocked( $response ),
@@ -325,7 +325,7 @@ final class Crawler {
 	 * @param array<string,mixed> $robots Robots data.
 	 * @return bool
 	 */
-	private static function robots_allows( $url, array $robots ) {
+	public static function robots_allows( $url, array $robots ) {
 		$parts = wp_parse_url( $url );
 		$path  = ( $parts['path'] ?? '/' ) . ( isset( $parts['query'] ) ? '?' . $parts['query'] : '' );
 

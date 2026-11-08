@@ -78,6 +78,19 @@ Set prices, currency and an optional calendar link under Site Audits > Settings 
 
 Full audits now include a "WordPress health" section from the same module.
 
+== SEO Inspector (single-page SEO report) ==
+
+Add `[site_audit_seo]` to a full-width page. It is separate from the full audit: visitors paste any page address and get an instant on-page report in six tabs. Nothing is stored; results are cached for 10 minutes.
+
+* **Insights**: every check with pass, warning or error, grouped (indexing, meta, content, images, links, schema, speed basics), with a 0 to 100 score.
+* **Meta**: Google result and social share previews, title and description length bars, canonical, robots, X-Robots-Tag, language, viewport, robots.txt, sitemap, hreflang, Open Graph and X/Twitter tags.
+* **Headers**: H1 to H6 counts and the full outline, flagging long (over 70 characters), empty, skipped-level and extra H1 headings. "Copy structure" copies the outline.
+* **Images**: thumbnails with alt text, size and lazy-loading, filters for missing alt, and CSV export.
+* **Links**: internal, external, nofollow and mail/tel links with anchor text, search, filters and CSV export.
+* **Schema**: JSON-LD types and blocks (highlighted, copyable), microdata and RDFa, with links to Google's Rich Results test and the Schema.org validator.
+
+Shortcode attributes: `examples`, `offset` (as for the Service Bay), `cta_url` and `cta_label` (an optional call to action under the report). `?inspect=<url>` on the page runs a check straight away, so results can be shared. Visitors are limited to 40 inspections an hour.
+
 == Limits and safeguards ==
 
 Each of these is a setting unless noted.
@@ -150,6 +163,7 @@ Use `$context->http` for any request to an address taken from a scanned site. It
 * New: Service Bay shortcode `[site_audit_service]`: WordPress vulnerability check, risk report, priced fix plan and booking.
 * New: WordPress health module (core, theme and plugin versions vs WPVulnerability.net and CISA KEV, plus hardening checks), also used in full audits.
 * New: "Booked a service" lead status and Service Bay settings.
+* New: SEO Inspector shortcode `[site_audit_seo]`: instant single-page report with Insights, Meta, Headers, Images, Links and Schema tabs.
 
 = 1.0.0 =
 * First release.
