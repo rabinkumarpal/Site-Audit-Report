@@ -49,7 +49,9 @@ $sar_tabs = array(
 					<?php foreach ( $examples as $example ) : ?>
 						<button type="button" class="bay-chip" data-try="<?php echo esc_attr( $example ); ?>"><?php echo esc_html( $example ); ?></button>
 					<?php endforeach; ?>
-					<button type="button" class="bay-chip" data-try="__self"><?php esc_html_e( 'this site', 'site-audit-report' ); ?></button>
+					<?php if ( Url_Guard::home_is_public() ) : // A local or private address would only be refused. ?>
+						<button type="button" class="bay-chip" data-try="__self"><?php esc_html_e( 'this site', 'site-audit-report' ); ?></button>
+					<?php endif; ?>
 				</div>
 				<p class="bay-fine"><span class="bay-fine__dot" aria-hidden="true"></span><?php esc_html_e( 'Reads one public page, its robots.txt and sitemap. Nothing is stored.', 'site-audit-report' ); ?></p>
 			</div>

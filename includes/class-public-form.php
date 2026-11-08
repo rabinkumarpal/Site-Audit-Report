@@ -413,7 +413,7 @@ final class Public_Form {
 			'sar_url_empty'   => __( 'Please enter a website address.', 'site-audit-report' ),
 			'sar_url_invalid' => __( 'That does not look like a valid website address.', 'site-audit-report' ),
 			'sar_url_scheme'  => __( 'Only http and https website addresses can be scanned.', 'site-audit-report' ),
-			'sar_url_blocked' => __( 'That address cannot be scanned. Please enter the public address of a website.', 'site-audit-report' ),
+			'sar_url_blocked' => __( 'That address is on a local or private network (such as localhost, or a staging site that is not public), so it cannot be scanned from here. Please enter the public address of a website.', 'site-audit-report' ),
 			'sar_dns_failed'  => __( 'That website address could not be found.', 'site-audit-report' ),
 		);
 		return $messages[ $code ] ?? __( 'Your request could not be processed.', 'site-audit-report' );

@@ -90,7 +90,7 @@ final class Tools {
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- The view escapes its own output.
 			echo Seo_Inspector::shortcode(
 				array(
-					'examples' => wp_parse_url( home_url(), PHP_URL_HOST ),
+					'examples' => \Site_Audit_Report\Url_Guard::home_is_public() ? wp_parse_url( home_url(), PHP_URL_HOST ) : 'wordpress.org',
 					'offset'   => '6',
 					'compact'  => '1',
 				)

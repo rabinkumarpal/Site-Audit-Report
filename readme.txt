@@ -4,7 +4,7 @@ Tags: seo audit, website audit, lead generation, pagespeed, site report
 Requires at least: 6.3
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.6.0
+Stable tag: 1.6.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -231,6 +231,10 @@ Actions: `sar_audit_completed` (audit record, report data).
 Use `$context->http` for any request to an address taken from a scanned site. It applies the private-network protection; `wp_remote_get()` does not. Requests to a fixed vendor API can use the normal HTTP functions.
 
 == Changelog ==
+
+= 1.6.1 =
+* Fixed: the "this site" shortcut in the SEO Inspector and Security Check is hidden when the site runs on localhost or a private network, where it could only be refused.
+* Changed: a clearer message when an address is on a local or private network.
 
 = 1.6.0 =
 * New: Before-and-after proof pages, public case studies built from two audit runs, frozen, improvement-only, optionally anonymous, with consent confirmation.

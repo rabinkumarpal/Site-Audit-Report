@@ -323,6 +323,24 @@ final class Url_Guard {
 	 * @return WP_Error
 	 */
 	private static function blocked() {
-		return new WP_Error( 'sar_url_blocked', __( 'That address cannot be scanned. Please enter the public address of a website.', 'site-audit-report' ) );
+		return new WP_Error( 'sar_url_blocked', __( 'That address is on a local or private network (such as localhost, or a staging site that is not public), so it cannot be scanned from here. Please enter the public address of a website.', 'site-audit-report' ) );
+	}
+
+	/**
+	 * Whether this WordPress site's own address can be scanned. A site on
+	 * localhost or a private network cannot, so "this site" shortcuts are hidden there.
+	 * Cached for 12 hours, because the check needs a DNS lookup.
+	 *
+	 * @return bool
+	 */
+	public static function home_is_public() {
+		$key    = 'sar_home_public_' . md5( home_url( '/' ) );
+		$cached = get_transient( $key );
+		if ( false !== $cached ) {
+			return 'yes' === $cached;
+		}
+		$public = ! is_wp_error( self::validate( home_url( '/' ) ) );
+		set_transient( $key, $public ? 'yes' : 'no', 12 * HOUR_IN_SECONDS );
+		return $public;
 	}
 }

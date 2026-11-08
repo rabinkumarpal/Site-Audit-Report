@@ -3,7 +3,7 @@
  * Plugin Name:       Site Audit Report
  * Plugin URI:        https://rabinpal.com
  * Description:       Scan any public website and business, then produce a scored audit report with prioritised fixes. Includes a lead form (shortcode and block), a WordPress vulnerability Security Check with a priced fix plan and booking, private report links and an admin workspace.
- * Version:           1.6.0
+ * Version:           1.6.1
  * Requires at least: 6.3
  * Requires PHP:      8.0
  * Author:            Rabin Pal
@@ -17,7 +17,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'SAR_VERSION', '1.6.0' );
+define( 'SAR_VERSION', '1.6.1' );
 define( 'SAR_FILE', __FILE__ );
 define( 'SAR_DIR', plugin_dir_path( __FILE__ ) );
 define( 'SAR_URL', plugin_dir_url( __FILE__ ) );
