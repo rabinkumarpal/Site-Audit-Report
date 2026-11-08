@@ -61,9 +61,11 @@ Without a key, requests share Google's anonymous quota, which is often already u
 
 Google's terms limit how long some Places content may be stored, and require attribution. Reports credit Google and link to the Maps listing. Set your retention period with these terms in mind, and check them yourself before relying on this section commercially.
 
-== Service Bay (WordPress health check) ==
+== WordPress Security Check ==
 
-Add `[site_audit_service]` to a full-width page. Visitors enter only a website address and, in about 20 to 30 seconds, see:
+(Called "Service Bay" in early builds. The old `[site_audit_service]` shortcode still works.)
+
+Add `[site_audit_security]` to a full-width page. Visitors enter only a website address and, in about 20 to 30 seconds, see:
 
 1. **Inspection console**: server, CDN, WordPress version, theme, plugins seen, HTTPS, and a live board of passive checks.
 2. **Risk report**: core, theme and plugin versions the site shows publicly, matched against WPVulnerability.net (free, no key) and the CISA Known Exploited Vulnerabilities list, with severity, CVE links, days public and the fixed version. Plus hardening checks: version leak, public usernames, XML-RPC, readme.html, uploads listing, public debug.log and login address.
@@ -74,7 +76,7 @@ The report has a private, shareable link (`?bay=<token>`). Checks of the same si
 
 Shortcode attributes: `examples` (comma-separated example sites for the "Try" chips) and `offset` (height in px of a fixed site header, so the sticky step rail clears it).
 
-Set prices, currency and an optional calendar link under Site Audits > Settings > Service Bay. Restyle it by overriding the `--bay-*` CSS variables on `.sar-bay`. Developers can change the tray with the `sar_service_tools` filter, the inspection with `sar_service_modules`, and react to bookings with the `sar_service_booked` action.
+Set prices, currency and an optional calendar link under Site Audits > Settings > Security Check. Restyle it by overriding the `--bay-*` CSS variables on `.sar-bay`. Developers can change the tray with the `sar_service_tools` filter, the inspection with `sar_service_modules`, and react to bookings with the `sar_service_booked` action.
 
 Full audits now include a "WordPress health" section from the same module.
 
@@ -89,7 +91,7 @@ Add `[site_audit_seo]` to a full-width page. It is separate from the full audit:
 * **Links**: internal, external, nofollow and mail/tel links with anchor text, search, filters and CSV export.
 * **Schema**: JSON-LD types and blocks (highlighted, copyable), microdata and RDFa, with links to Google's Rich Results test and the Schema.org validator.
 
-Shortcode attributes: `examples`, `offset` (as for the Service Bay), `cta_url` and `cta_label` (an optional call to action under the report). `?inspect=<url>` on the page runs a check straight away, so results can be shared. Visitors are limited to 40 inspections an hour.
+Shortcode attributes: `examples`, `offset` (as for the Security Check), `cta_url` and `cta_label` (an optional call to action under the report). `?inspect=<url>` on the page runs a check straight away, so results can be shared. Visitors are limited to 40 inspections an hour.
 
 == Limits and safeguards ==
 
@@ -160,9 +162,9 @@ Use `$context->http` for any request to an address taken from a scanned site. It
 == Changelog ==
 
 = 1.1.0 =
-* New: Service Bay shortcode `[site_audit_service]`: WordPress vulnerability check, risk report, priced fix plan and booking.
+* New: WordPress Security Check shortcode `[site_audit_security]`: WordPress vulnerability check, risk report, priced fix plan and booking.
 * New: WordPress health module (core, theme and plugin versions vs WPVulnerability.net and CISA KEV, plus hardening checks), also used in full audits.
-* New: "Booked a service" lead status and Service Bay settings.
+* New: "Booked a service" lead status and Security Check settings.
 * New admin screens: Site Audits > SEO Inspector (runs the inspector in wp-admin, with "Queue a full audit"), Site Audits > Guide (live setup checklist, the three tools and their shortcodes, where results go, lead workflow, hooks) and a Site Audits dashboard widget.
 * New: Source column and Source / Lead status filters in Audits and leads, plus an "Inspect SEO" row action.
 * New: SEO Inspector shortcode `[site_audit_seo]`: instant single-page report with Insights, Meta, Headers, Images, Links and Schema tabs.

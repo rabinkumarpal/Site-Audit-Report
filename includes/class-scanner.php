@@ -28,7 +28,7 @@ final class Scanner {
 	 */
 	public static function modules( array $audit = array() ) {
 		if ( self::is_service( $audit ) ) {
-			// The Service Bay runs a short, WordPress-focused inspection.
+			// The Security Check runs a short, WordPress-focused inspection.
 			$modules = array(
 				new Modules\Wordpress(),
 				new Modules\Security(),
@@ -48,7 +48,7 @@ final class Scanner {
 	}
 
 	/**
-	 * Whether an audit came from the Service Bay.
+	 * Whether an audit came from the Security Check.
 	 *
 	 * @param array<string,mixed> $audit Audit.
 	 * @return bool

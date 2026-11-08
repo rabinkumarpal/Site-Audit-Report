@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Site Audit Report
  * Plugin URI:        https://rabinpal.com
- * Description:       Scan any public website and business, then produce a scored audit report with prioritised fixes. Includes a lead form (shortcode and block), a WordPress vulnerability Service Bay with a priced fix plan and booking, private report links and an admin workspace.
+ * Description:       Scan any public website and business, then produce a scored audit report with prioritised fixes. Includes a lead form (shortcode and block), a WordPress vulnerability Security Check with a priced fix plan and booking, private report links and an admin workspace.
  * Version:           1.1.0
  * Requires at least: 6.3
  * Requires PHP:      8.0

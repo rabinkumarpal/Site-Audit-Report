@@ -1,6 +1,6 @@
 <?php
 /**
- * The Service Bay: a WordPress vulnerability check that turns its findings
+ * The Security Check: a WordPress vulnerability check that turns its findings
  * into a priced fix plan and a booking request.
  *
  * Flow: enter an address → live inspection → risk report → fix tray → book.
@@ -17,7 +17,7 @@ use WP_Error;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Service Bay.
+ * Security Check.
  */
 final class Service_Bay {
 
@@ -31,6 +31,8 @@ final class Service_Bay {
 	 * @return void
 	 */
 	public static function register() {
+		add_shortcode( 'site_audit_security', array( self::class, 'shortcode' ) );
+		// The original name keeps working on existing pages.
 		add_shortcode( 'site_audit_service', array( self::class, 'shortcode' ) );
 		add_action( 'init', array( self::class, 'register_assets' ) );
 		foreach ( array( 'start', 'status', 'book' ) as $action ) {
@@ -88,7 +90,7 @@ final class Service_Bay {
 		unset( $tool );
 
 		/**
-		 * Filters the Service Bay tray. Each item: name, desc, price.
+		 * Filters the Security Check tray. Each item: name, desc, price.
 		 *
 		 * @param array $tools Tools keyed by ID.
 		 */
@@ -108,7 +110,7 @@ final class Service_Bay {
 				'offset'   => '',
 			),
 			(array) $atts,
-			'site_audit_service'
+			'site_audit_security'
 		);
 
 		wp_enqueue_style( 'site-audit-service' );
@@ -196,7 +198,7 @@ final class Service_Bay {
 	}
 
 	/**
-	 * Validates and queues a Service Bay inspection.
+	 * Validates and queues a Security Check inspection.
 	 *
 	 * @return array<string,mixed>|WP_Error
 	 */
@@ -264,7 +266,7 @@ final class Service_Bay {
 	}
 
 	/**
-	 * A recent Service Bay check of a domain that can be shown again.
+	 * A recent Security Check check of a domain that can be shown again.
 	 *
 	 * @param string $domain Domain key.
 	 * @return array<string,mixed>|null
@@ -303,7 +305,7 @@ final class Service_Bay {
 	}
 
 	/**
-	 * Shapes an audit for the Service Bay script.
+	 * Shapes an audit for the Security Check script.
 	 *
 	 * @param array<string,mixed> $audit Audit.
 	 * @return array<string,mixed>
@@ -617,7 +619,7 @@ final class Service_Bay {
 		$to = (string) Settings::get( 'notify_email' );
 		$to = is_email( $to ) ? $to : (string) get_option( 'admin_email' );
 		/* translators: %s: website. */
-		$subject = sprintf( __( 'Service Bay booking: %s', 'site-audit-report' ), $website );
+		$subject = sprintf( __( 'Security Check booking: %s', 'site-audit-report' ), $website );
 		$body    = implode(
 			"\n",
 			array_filter(
@@ -640,7 +642,7 @@ final class Service_Bay {
 		wp_mail( $to, $subject, $body, array( 'Reply-To: ' . $name . ' <' . $email . '>' ) );
 
 		/**
-		 * Fires after a Service Bay booking.
+		 * Fires after a Security Check booking.
 		 *
 		 * @param array $booking name, email, phone, website, notes, tools, total, audit.
 		 */

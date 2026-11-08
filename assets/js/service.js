@@ -1,4 +1,4 @@
-/* Site Audit Report — Service Bay. All remote text is set with textContent. */
+/* Site Audit Report — Security Check. All remote text is set with textContent. */
 ( function () {
 	'use strict';
 

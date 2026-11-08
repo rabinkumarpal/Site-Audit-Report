@@ -448,13 +448,13 @@ final class Admin {
 					?>
 				</table>
 
-				<h2><?php esc_html_e( 'Service Bay', 'site-audit-report' ); ?></h2>
+				<h2><?php esc_html_e( 'Security Check', 'site-audit-report' ); ?></h2>
 				<p>
 					<?php
 					printf(
 						/* translators: %s: shortcode. */
-						esc_html__( 'The Service Bay is a WordPress vulnerability check with a priced fix plan and booking form. Add it with %s. Prices below fill the fix tray.', 'site-audit-report' ),
-						'<code>[site_audit_service]</code>'
+						esc_html__( 'The WordPress Security Check matches a site\'s core, theme and plugin versions against known vulnerabilities, then offers a priced fix plan and booking form. Add it with %s. Prices below fill the fix plan.', 'site-audit-report' ),
+						'<code>[site_audit_security]</code>'
 					);
 					?>
 				</p>

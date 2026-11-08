@@ -1,6 +1,6 @@
 <?php
 /**
- * Service Bay markup. The script fills it in; without JavaScript the
+ * Security Check markup. The script fills it in; without JavaScript the
  * visitor sees the intro and the booking details.
  *
  * Variables: $uid, $examples, $privacy, $tools, $style.
@@ -21,7 +21,7 @@ $sar_period   = (string) Settings::get( 'service_period' );
 	<section class="bay-hero" id="bay-scan" aria-labelledby="<?php echo esc_attr( $uid ); ?>-title">
 		<div class="bay-wrap bay-hero__grid">
 			<div class="bay-hero__copy">
-				<p class="bay-pill"><span class="bay-pill__tag"><?php esc_html_e( 'Free', 'site-audit-report' ); ?></span><span><?php esc_html_e( 'WordPress health check · 20 seconds · no login', 'site-audit-report' ); ?></span></p>
+				<p class="bay-pill"><span class="bay-pill__tag"><?php esc_html_e( 'Free', 'site-audit-report' ); ?></span><span><?php esc_html_e( 'WordPress security check · 20 seconds · no login', 'site-audit-report' ); ?></span></p>
 				<h1 class="bay-h1" id="<?php echo esc_attr( $uid ); ?>-title"><?php echo wp_kses( __( 'Is your site one plugin away from a <em>breach?</em>', 'site-audit-report' ), array( 'em' => array() ) ); ?></h1>
 				<p class="bay-lead"><?php echo wp_kses( __( 'Most hacked WordPress sites get in through a plugin nobody updated. Enter your address and we will read the <strong>core, theme and plugin versions your site shows the public</strong>, match them against known vulnerabilities and the CISA list of holes attackers are using right now, and price the fix.', 'site-audit-report' ), array( 'strong' => array() ) ); ?></p>
 

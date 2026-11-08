@@ -42,7 +42,7 @@ final class Seo_Inspector {
 	}
 
 	/**
-	 * Registers front-end files. The inspector shares the Service Bay's base styles.
+	 * Registers front-end files. The inspector shares the Security Check's base styles.
 	 *
 	 * @return void
 	 */

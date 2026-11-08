@@ -172,14 +172,14 @@ final class Tools {
 				'ok'    => is_email( (string) $s['notify_email'] ) ? true : false,
 				'label' => __( 'Lead alerts email', 'site-audit-report' ),
 				'text'  => is_email( (string) $s['notify_email'] )
-					? __( 'New form leads and Service Bay bookings are emailed here.', 'site-audit-report' )
+					? __( 'New form leads and Security Check bookings are emailed here.', 'site-audit-report' )
 					/* translators: %s: email. */
 					: sprintf( __( 'Not set. Bookings go to the site admin email (%s) and form leads are not emailed.', 'site-audit-report' ), (string) get_option( 'admin_email' ) ),
 				'url'   => $settings,
 			),
 			array(
 				'ok'    => $prices > 0,
-				'label' => __( 'Service Bay prices', 'site-audit-report' ),
+				'label' => __( 'Security Check prices', 'site-audit-report' ),
 				/* translators: %s: currency. */
 				'text'  => sprintf( __( 'Prices in %s fill the fix plan. Set any to 0 to show it as free.', 'site-audit-report' ), (string) $s['service_currency'] ),
 				'url'   => $settings,
@@ -231,14 +231,14 @@ final class Tools {
 			array(
 				'id'      => 'bay',
 				'icon'    => 'dashicons-shield',
-				'name'    => __( 'Service Bay (WordPress health check)', 'site-audit-report' ),
-				'tag'     => 'site_audit_service',
+				'name'    => __( 'WordPress Security Check', 'site-audit-report' ),
+				'tag'     => 'site_audit_security',
 				'what'    => __( 'Visitors enter only an address. A short inspection reads the WordPress core, theme and plugin versions the site shows, matches them against known vulnerabilities and the CISA exploited list, then pre-loads a priced fix plan they can book.', 'site-audit-report' ),
 				'attrs'   => array(
 					'examples' => __( 'Comma-separated example sites for the "Try" chips.', 'site-audit-report' ),
 					'offset'   => __( 'Height in px of a fixed site header, so the sticky step rail clears it.', 'site-audit-report' ),
 				),
-				'results' => __( 'Audits and leads (source "Service Bay"). Bookings set the lead to "Booked a service", put the chosen plan and phone in Notes, and email the lead alerts address.', 'site-audit-report' ),
+				'results' => __( 'Audits and leads (source "Security Check"). Bookings set the lead to "Booked a service", put the chosen plan and phone in Notes, and email the lead alerts address.', 'site-audit-report' ),
 				'time'    => __( '20 to 40 seconds', 'site-audit-report' ),
 				'stored'  => __( 'Yes; contact details only after booking', 'site-audit-report' ),
 			),
@@ -296,7 +296,7 @@ final class Tools {
 			<h2 id="tools"><?php esc_html_e( 'The three tools', 'site-audit-report' ); ?></h2>
 			<div class="sar-tools">
 				<?php foreach ( $tools as $tool ) : ?>
-					<?php $pages = self::pages_using( $tool['tag'] ); ?>
+					<?php $pages = 'site_audit_security' === $tool['tag'] ? array_merge( self::pages_using( 'site_audit_security' ), self::pages_using( 'site_audit_service' ) ) : self::pages_using( $tool['tag'] ); ?>
 					<section class="sar-card sar-tool" id="<?php echo esc_attr( $tool['id'] ); ?>">
 						<header class="sar-tool__head">
 							<span class="dashicons <?php echo esc_attr( $tool['icon'] ); ?>" aria-hidden="true"></span>
@@ -333,7 +333,7 @@ final class Tools {
 						<?php if ( 'seo' === $tool['id'] ) : ?>
 							<p><a class="button button-primary" href="<?php echo esc_url( $seo ); ?>"><?php esc_html_e( 'Open the SEO Inspector', 'site-audit-report' ); ?></a></p>
 						<?php elseif ( 'bay' === $tool['id'] ) : ?>
-							<p><a class="button" href="<?php echo esc_url( add_query_arg( 'source', 'service', $audits ) ); ?>"><?php esc_html_e( 'See Service Bay checks', 'site-audit-report' ); ?></a> <a class="button" href="<?php echo esc_url( add_query_arg( 'lead_status', 'booked', $audits ) ); ?>"><?php esc_html_e( 'See bookings', 'site-audit-report' ); ?></a></p>
+							<p><a class="button" href="<?php echo esc_url( add_query_arg( 'source', 'service', $audits ) ); ?>"><?php esc_html_e( 'See security checks', 'site-audit-report' ); ?></a> <a class="button" href="<?php echo esc_url( add_query_arg( 'lead_status', 'booked', $audits ) ); ?>"><?php esc_html_e( 'See bookings', 'site-audit-report' ); ?></a></p>
 						<?php else : ?>
 							<p><a class="button" href="<?php echo esc_url( add_query_arg( 'source', 'form', $audits ) ); ?>"><?php esc_html_e( 'See form leads', 'site-audit-report' ); ?></a></p>
 						<?php endif; ?>
@@ -347,7 +347,7 @@ final class Tools {
 					<thead><tr><th><?php esc_html_e( 'You want to…', 'site-audit-report' ); ?></th><th><?php esc_html_e( 'Go to', 'site-audit-report' ); ?></th></tr></thead>
 					<tbody>
 						<tr><td><?php esc_html_e( 'See every stored audit and lead', 'site-audit-report' ); ?></td><td><a href="<?php echo esc_url( $audits ); ?>"><?php esc_html_e( 'Site Audits > Audits and leads', 'site-audit-report' ); ?></a></td></tr>
-						<tr><td><?php esc_html_e( 'Only Service Bay checks, form leads or audits your team ran', 'site-audit-report' ); ?></td><td><?php esc_html_e( 'Audits and leads > Source filter (or the Source column)', 'site-audit-report' ); ?></td></tr>
+						<tr><td><?php esc_html_e( 'Only security checks, form leads or audits your team ran', 'site-audit-report' ); ?></td><td><?php esc_html_e( 'Audits and leads > Source filter (or the Source column)', 'site-audit-report' ); ?></td></tr>
 						<tr><td><?php esc_html_e( 'See who booked a fix and what plan they picked', 'site-audit-report' ); ?></td><td><a href="<?php echo esc_url( add_query_arg( 'lead_status', 'booked', $audits ) ); ?>"><?php esc_html_e( 'Lead filter "Booked a service"', 'site-audit-report' ); ?></a> · <?php esc_html_e( 'open the row, then Notes', 'site-audit-report' ); ?></td></tr>
 						<tr><td><?php esc_html_e( 'Open, download or re-run a report', 'site-audit-report' ); ?></td><td><?php esc_html_e( 'Click the website name; or hover a row for View / Re-run / Inspect SEO', 'site-audit-report' ); ?></td></tr>
 						<tr><td><?php esc_html_e( 'Check one page\'s SEO right now', 'site-audit-report' ); ?></td><td><a href="<?php echo esc_url( $seo ); ?>"><?php esc_html_e( 'Site Audits > SEO Inspector', 'site-audit-report' ); ?></a></td></tr>
@@ -362,7 +362,7 @@ final class Tools {
 			<div class="sar-card sar-steps">
 				<ol>
 					<li><strong><?php esc_html_e( 'Triage daily.', 'site-audit-report' ); ?></strong> <?php esc_html_e( 'Filter Lead = "Booked a service" first; these people asked to be called. Then "New" form leads with low scores, which have the most to gain.', 'site-audit-report' ); ?></li>
-					<li><strong><?php esc_html_e( 'Read before you call.', 'site-audit-report' ); ?></strong> <?php esc_html_e( 'Open the report and note the two or three highest-priority fixes. For Service Bay leads, the risk report and chosen plan are in the row.', 'site-audit-report' ); ?></li>
+					<li><strong><?php esc_html_e( 'Read before you call.', 'site-audit-report' ); ?></strong> <?php esc_html_e( 'Open the report and note the two or three highest-priority fixes. For Security Check leads, the risk report and chosen plan are in the row.', 'site-audit-report' ); ?></li>
 					<li><strong><?php esc_html_e( 'Update the status.', 'site-audit-report' ); ?></strong> <?php esc_html_e( 'Move each lead through Contacted, Qualified, Won or Lost and keep notes on the row, so the team sees the same picture.', 'site-audit-report' ); ?></li>
 					<li><strong><?php esc_html_e( 'Re-run after the work.', 'site-audit-report' ); ?></strong> <?php esc_html_e( 'Re-run the audit when fixes are live. The report shows the new score next to the previous one, which makes a good case study.', 'site-audit-report' ); ?></li>
 				</ol>
@@ -375,7 +375,7 @@ final class Tools {
 						<?php
 						printf(
 							/* translators: 1: per hour, 2: per site per day, 3: total per day. */
-							esc_html__( 'Public full audits: %1$d per visitor per hour, %2$d per website per day, %3$d in total per day (Settings > Limits). Service Bay allows twice the per-visitor and per-site numbers; the SEO Inspector allows 40 per visitor per hour.', 'site-audit-report' ),
+							esc_html__( 'Public full audits: %1$d per visitor per hour, %2$d per website per day, %3$d in total per day (Settings > Limits). The Security Check allows twice the per-visitor and per-site numbers; the SEO Inspector allows 40 per visitor per hour.', 'site-audit-report' ),
 							(int) Settings::get( 'limit_ip_hour' ),
 							(int) Settings::get( 'limit_domain_day' ),
 							(int) Settings::get( 'limit_global_day' )
@@ -404,7 +404,7 @@ final class Tools {
 					<thead><tr><th><?php esc_html_e( 'Hook', 'site-audit-report' ); ?></th><th><?php esc_html_e( 'Use it to', 'site-audit-report' ); ?></th></tr></thead>
 					<tbody>
 						<tr><td><code>sar_modules</code></td><td><?php esc_html_e( 'Add or remove sections of the full audit (implement Site_Audit_Report\Module).', 'site-audit-report' ); ?></td></tr>
-						<tr><td><code>sar_service_modules</code></td><td><?php esc_html_e( 'Change what the Service Bay inspection runs.', 'site-audit-report' ); ?></td></tr>
+						<tr><td><code>sar_service_modules</code></td><td><?php esc_html_e( 'Change what the Security Check inspection runs.', 'site-audit-report' ); ?></td></tr>
 						<tr><td><code>sar_service_tools</code></td><td><?php esc_html_e( 'Change the fix-plan services, descriptions or prices.', 'site-audit-report' ); ?></td></tr>
 						<tr><td><code>sar_service_booked</code></td><td><?php esc_html_e( 'Send bookings to a CRM, Slack or calendar.', 'site-audit-report' ); ?></td></tr>
 						<tr><td><code>sar_audit_completed</code></td><td><?php esc_html_e( 'React when any audit finishes.', 'site-audit-report' ); ?></td></tr>
@@ -413,7 +413,7 @@ final class Tools {
 						<tr><td><code>wp site-audit-report run-queue</code></td><td><?php esc_html_e( 'WP-CLI: process queued audits from a real cron job.', 'site-audit-report' ); ?></td></tr>
 					</tbody>
 				</table>
-				<p class="description"><?php esc_html_e( 'Restyle the Service Bay and SEO Inspector by overriding the --bay-* CSS variables on .sar-bay.', 'site-audit-report' ); ?></p>
+				<p class="description"><?php esc_html_e( 'Restyle the Security Check and SEO Inspector by overriding the --bay-* CSS variables on .sar-bay.', 'site-audit-report' ); ?></p>
 			</div>
 		</div>
 		<?php

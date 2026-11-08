@@ -58,7 +58,7 @@ final class Audits_Table extends WP_List_Table {
 	public static function sources() {
 		return array(
 			'form'    => __( 'Audit form', 'site-audit-report' ),
-			'service' => __( 'Service Bay', 'site-audit-report' ),
+			'service' => __( 'Security Check', 'site-audit-report' ),
 			'admin'   => __( 'Team', 'site-audit-report' ),
 		);
 	}
