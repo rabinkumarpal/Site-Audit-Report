@@ -4,7 +4,7 @@ Tags: seo audit, website audit, lead generation, pagespeed, site report
 Requires at least: 6.3
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.4.0
+Stable tag: 1.5.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -133,6 +133,17 @@ Under Site Audits > Change watch (or "Watch changes" on any audit row), add the 
 
 The team gets one email digest per run when urgent or notable changes are found. Each site keeps a dated history with before and after values. "Check all now" runs it on demand.
 
+== You vs. a competitor ==
+
+In the SEO Inspector (front end or wp-admin), click "+ Compare with a competitor" and enter their page. Both pages are inspected at the same time, then:
+
+* A scoreboard shows both scores and who wins how many of 18 points: SEO and accessibility scores, errors, title and description length, a single H1, sections, words, images without alt, internal links, structured data, social tags, server response, HTML size, HTTPS, canonical, sitemap and indexability. Small differences in size, speed and counts count as level.
+* "Where they beat you" lists each point they win with what to do about it. For structured data it names the schema types they use that you don't.
+* "Where you lead" lists your advantages, which is useful in a sales call.
+* The full side-by-side table, and a switch to show all seven tabs for either site.
+
+The page address updates to `?inspect=<you>&vs=<them>`, so a comparison can be shared or bookmarked. If the competitor's page cannot be read, your own report still shows.
+
 == Limits and safeguards ==
 
 Each of these is a setting unless noted.
@@ -200,6 +211,9 @@ Actions: `sar_audit_completed` (audit record, report data).
 Use `$context->http` for any request to an address taken from a scanned site. It applies the private-network protection; `wp_remote_get()` does not. Requests to a fixed vendor API can use the normal HTTP functions.
 
 == Changelog ==
+
+= 1.5.0 =
+* New: You vs. a competitor in the SEO Inspector: 18-point scoreboard, "where they beat you" with fixes (including missing schema types), "where you lead", side-by-side table, detail switch and shareable links.
 
 = 1.4.0 =
 * New: Accessibility quick check (17 WCAG-mapped checks) as an SEO Inspector tab and a full-audit section.

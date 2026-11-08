@@ -75,6 +75,8 @@ final class Seo_Inspector {
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Only pre-fills the address box.
 		$prefill = isset( $_GET[ self::PARAM ] ) ? mb_substr( sanitize_text_field( wp_unslash( $_GET[ self::PARAM ] ) ), 0, 2048 ) : '';
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Only pre-fills the competitor box.
+		$prefill_vs = isset( $_GET['vs'] ) ? mb_substr( sanitize_text_field( wp_unslash( $_GET['vs'] ) ), 0, 2048 ) : '';
 
 		wp_localize_script(
 			'site-audit-seo',
@@ -84,6 +86,7 @@ final class Seo_Inspector {
 				'nonce'   => wp_create_nonce( self::NONCE_ACTION ),
 				'param'   => self::PARAM,
 				'prefill' => $prefill,
+				'prefillVs' => $prefill_vs,
 				'home'    => home_url( '/' ),
 				'newUrl'  => ! empty( $atts['compact'] ) && is_admin() ? admin_url( 'admin.php?page=site-audit-report&new=' ) : '',
 			)

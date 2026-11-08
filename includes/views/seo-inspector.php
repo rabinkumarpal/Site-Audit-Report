@@ -36,6 +36,13 @@ $sar_tabs = array(
 					<input id="<?php echo esc_attr( $uid ); ?>-url" class="bay-plate__input" name="url" type="text" inputmode="url" autocomplete="url" autocapitalize="none" spellcheck="false" maxlength="2048" placeholder="yourwebsite.com/any-page" required>
 					<button class="bay-btn bay-plate__go" type="submit"><span><?php esc_html_e( 'Inspect page', 'site-audit-report' ); ?></span><span aria-hidden="true">↗</span></button>
 				</form>
+				<div class="seo-vs" hidden>
+					<span class="seo-vs__tag" aria-hidden="true">VS</span>
+					<label class="bay-sr" for="<?php echo esc_attr( $uid ); ?>-vs"><?php esc_html_e( 'Competitor page address', 'site-audit-report' ); ?></label>
+					<input id="<?php echo esc_attr( $uid ); ?>-vs" class="seo-vs__input" type="text" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="2048" placeholder="<?php esc_attr_e( 'competitor.com/their-page', 'site-audit-report' ); ?>">
+					<button type="button" class="seo-vs__x" data-action="vs-off" aria-label="<?php esc_attr_e( 'Remove competitor', 'site-audit-report' ); ?>">×</button>
+				</div>
+				<button type="button" class="seo-vs-toggle" data-action="vs-on"><span aria-hidden="true">+</span> <?php esc_html_e( 'Compare with a competitor', 'site-audit-report' ); ?></button>
 				<p class="bay-plate__msg" role="alert"></p>
 				<div class="bay-try">
 					<span class="bay-mono"><?php esc_html_e( 'Try:', 'site-audit-report' ); ?></span>
@@ -105,6 +112,7 @@ $sar_tabs = array(
 			</div>
 
 			<div class="seo-report" data-bind="report" hidden>
+				<div class="seo-compare" data-bind="compare" hidden></div>
 				<div class="seo-tabs" role="tablist" aria-label="<?php esc_attr_e( 'Report sections', 'site-audit-report' ); ?>">
 					<?php foreach ( $sar_tabs as $sar_id => $sar_label ) : ?>
 						<button type="button" class="seo-tab" role="tab" id="<?php echo esc_attr( $uid . '-tab-' . $sar_id ); ?>" aria-controls="<?php echo esc_attr( $uid . '-panel-' . $sar_id ); ?>" aria-selected="<?php echo 'insights' === $sar_id ? 'true' : 'false'; ?>" data-tab="<?php echo esc_attr( $sar_id ); ?>" tabindex="<?php echo 'insights' === $sar_id ? '0' : '-1'; ?>"><span><?php echo esc_html( $sar_label ); ?></span><span class="seo-tab__n" data-count="<?php echo esc_attr( $sar_id ); ?>"></span></button>

@@ -247,7 +247,7 @@ final class Tools {
 				'icon'    => 'dashicons-search',
 				'name'    => __( 'SEO Inspector (single page)', 'site-audit-report' ),
 				'tag'     => 'site_audit_seo',
-				'what'    => __( 'An instant on-page report for any one URL in seven tabs: Insights, Meta, Headers, Images, Links, Schema and Accessibility, with a score, filters, copy and CSV export. Add ?inspect=URL to the page address to run it straight away.', 'site-audit-report' ),
+				'what'    => __( 'An instant on-page report for any one URL in seven tabs: Insights, Meta, Headers, Images, Links, Schema and Accessibility, with a score, filters, copy and CSV export. Add ?inspect=URL to the page address to run it straight away. "+ Compare with a competitor" puts two pages side by side with an 18-point scoreboard and what to fix to catch up.', 'site-audit-report' ),
 				'attrs'   => array(
 					'examples'  => __( 'Example sites for the "Try" chips.', 'site-audit-report' ),
 					'offset'    => __( 'Fixed header height in px.', 'site-audit-report' ),

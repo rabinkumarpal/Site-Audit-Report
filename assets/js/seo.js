@@ -142,12 +142,12 @@
 
 		form.addEventListener( 'submit', function ( e ) {
 			e.preventDefault();
-			run( false );
+			run();
 		} );
 		root.querySelectorAll( '[data-try]' ).forEach( function ( chip ) {
 			chip.addEventListener( 'click', function () {
 				input.value = chip.getAttribute( 'data-try' ) === '__self' ? cfg.home : chip.getAttribute( 'data-try' );
-				run( false );
+				run();
 			} );
 		} );
 
@@ -178,8 +178,62 @@
 		} );
 
 		/* ---------- Run */
-		function run( retried ) {
+		/* ---------- Competitor box */
+		var vsWrap = $( '.seo-vs' );
+		var vsInput = $( '.seo-vs__input' );
+		var vsToggle = $( '.seo-vs-toggle' );
+		var reports = { you: null, them: null };
+		function vsOn( focus ) {
+			vsWrap.hidden = false;
+			vsToggle.hidden = true;
+			if ( focus ) {
+				vsInput.focus();
+			}
+		}
+		vsToggle.addEventListener( 'click', function () {
+			vsOn( true );
+		} );
+		$( '[data-action="vs-off"]' ).addEventListener( 'click', function () {
+			vsInput.value = '';
+			vsWrap.hidden = true;
+			vsToggle.hidden = false;
+			vsToggle.focus();
+		} );
+		vsInput.addEventListener( 'keydown', function ( e ) {
+			if ( e.key === 'Enter' ) {
+				e.preventDefault();
+				run();
+			}
+		} );
+
+		/* ---------- Fetch one report (retries once with a fresh nonce) */
+		function fetchReport( url, retried ) {
+			var data = new FormData();
+			data.append( 'action', 'sar_seo_inspect' );
+			data.append( 'nonce', cfg.nonce );
+			data.append( 'url', url );
+			return fetch( cfg.ajaxUrl, { method: 'POST', body: data, credentials: 'same-origin' } )
+				.then( function ( r ) {
+					return r.json();
+				} )
+				.then( function ( json ) {
+					if ( json.success ) {
+						return json.data;
+					}
+					if ( json.data && json.data.nonce ) {
+						cfg.nonce = json.data.nonce;
+						if ( json.data.code === 'sar_bad_nonce' && ! retried ) {
+							return fetchReport( url, true );
+						}
+					}
+					throw new Error( ( json.data && json.data.message ) || 'Something went wrong. Please try again.' );
+				} );
+		}
+
+		/* ---------- Run */
+		function run() {
 			var url = input.value.trim();
+			var vs = vsWrap.hidden ? '' : vsInput.value.trim();
 			msg.textContent = '';
 			if ( ! url ) {
 				msg.textContent = 'Please enter a page address.';
@@ -189,40 +243,45 @@
 			go.disabled = true;
 			root.setAttribute( 'data-state', 'running' );
 			bind( 'badge' ).textContent = 'Reading';
-			bind( 'stage' ).textContent = 'Fetching the page, robots.txt and sitemap…';
+			bind( 'stage' ).textContent = vs ? 'Fetching both pages side by side…' : 'Fetching the page, robots.txt and sitemap…';
 			bind( 'target' ).textContent = url.replace( /^https?:\/\//i, '' );
 			bind( 'score' ).textContent = '…';
 
-			var data = new FormData();
-			data.append( 'action', 'sar_seo_inspect' );
-			data.append( 'nonce', cfg.nonce );
-			data.append( 'url', url );
-			fetch( cfg.ajaxUrl, { method: 'POST', body: data, credentials: 'same-origin' } )
-				.then( function ( r ) {
-					return r.json();
-				} )
-				.then( function ( json ) {
+			var jobs = [ fetchReport( url ) ];
+			if ( vs ) {
+				// The competitor's failure should not hide your own report.
+				jobs.push( fetchReport( vs ).catch( function ( err ) {
+					return { error: err.message };
+				} ) );
+			}
+			Promise.all( jobs )
+				.then( function ( res ) {
 					go.disabled = false;
-					if ( json.success ) {
-						render( json.data );
-						if ( window.history && window.history.replaceState ) {
-							var u = new URL( window.location.href );
-							u.searchParams.set( cfg.param, json.data.page.final_url );
-							window.history.replaceState( null, '', u.toString() );
-						}
-						return;
-					}
-					if ( json.data && json.data.nonce ) {
-						cfg.nonce = json.data.nonce;
-						if ( json.data.code === 'sar_bad_nonce' && ! retried ) {
-							return run( true );
+					reports.you = res[ 0 ];
+					reports.them = res[ 1 ] && ! res[ 1 ].error ? res[ 1 ] : null;
+					render( reports.you );
+					if ( vs && reports.them ) {
+						renderCompare( reports.you, reports.them );
+					} else {
+						hideCompare();
+						if ( vs ) {
+							msg.textContent = 'Competitor: ' + res[ 1 ].error;
 						}
 					}
-					fail( ( json.data && json.data.message ) || 'Something went wrong. Please try again.' );
+					if ( window.history && window.history.replaceState ) {
+						var u = new URL( window.location.href );
+						u.searchParams.set( cfg.param, reports.you.page.final_url );
+						if ( reports.them ) {
+							u.searchParams.set( 'vs', reports.them.page.final_url );
+						} else {
+							u.searchParams.delete( 'vs' );
+						}
+						window.history.replaceState( null, '', u.toString() );
+					}
 				} )
-				.catch( function () {
+				.catch( function ( err ) {
 					go.disabled = false;
-					fail( 'Something went wrong. Please try again.' );
+					fail( err.message || 'Something went wrong. Please try again.' );
 				} );
 		}
 
@@ -266,6 +325,10 @@
 				bind( 'cta' ).hidden = false;
 			}
 
+			renderTabs( d );
+		}
+
+		function renderTabs( d ) {
 			count( 'insights', d.counts.fail + d.counts.warn, d.counts.fail > 0 );
 			count( 'headers', d.headings.list.length, d.headings.counts.h1 !== 1 || d.headings.skips > 0 );
 			count( 'images', d.images.total, d.images.missing_alt > 0 );
@@ -756,10 +819,179 @@
 			box.appendChild( c );
 		}
 
+		/* ---------- You vs. a competitor */
+		var cmp = bind( 'compare' );
+		function hideCompare() {
+			cmp.hidden = true;
+			cmp.textContent = '';
+		}
+		var genericTypes = [ 'WebPage', 'WebSite', 'ImageObject', 'ReadAction', 'SearchAction', 'EntryPoint', 'ListItem', 'PropertyValueSpecification', 'Person', 'Thing', 'CreativeWork' ];
+		function schemaTypes( r ) {
+			return r.schema.types.concat( r.schema.microdata ).filter( function ( t, i, all ) {
+				return all.indexOf( t ) === i;
+			} );
+		}
+		function inRange( n, lo, hi ) {
+			return n === 0 ? 1000 : n < lo ? lo - n : n > hi ? n - hi : 0; // Distance from the ideal range.
+		}
+		function ogComplete( r ) {
+			return !! ( r.meta.og[ 'og:title' ] && r.meta.og[ 'og:description' ] && r.meta.og[ 'og:image' ] );
+		}
+		function indexable( r ) {
+			return ! /noindex/i.test( r.meta.robots + ' ' + r.meta.x_robots ) && r.meta.robots_txt.allowed;
+		}
+		// Each metric: label, value getter, how to show it, which way is better, and what to do if they win.
+		var metrics = [
+			[ 'SEO score', function ( r ) { return r.score || 0; }, String, 'high', 0, 'Their on-page basics score higher. Clear the errors on the Insights tab first.' ],
+			[ 'Accessibility score', function ( r ) { return r.a11y ? r.a11y.score || 0 : 0; }, String, 'high', 0, 'Their page is easier to use with a screen reader or keyboard. Work through the Accessibility tab.' ],
+			[ 'Errors to fix', function ( r ) { return r.counts.fail; }, String, 'low', 0, 'You have more outright errors. Each is listed with its fix on the Insights tab.' ],
+			[ 'Title length', function ( r ) { return inRange( r.meta.title_len, 30, 65 ); }, function ( v, r ) { return r.meta.title_len ? r.meta.title_len + ' chars' : 'Missing'; }, 'low', 0, 'Their title fits Google\'s display better. Aim for 30–65 characters with the main keyword first.' ],
+			[ 'Meta description', function ( r ) { return inRange( r.meta.desc_len, 70, 160 ); }, function ( v, r ) { return r.meta.desc_len ? r.meta.desc_len + ' chars' : 'Missing'; }, 'low', 0, 'Write a 70–160 character description that sells the click.' ],
+			[ 'Single H1', function ( r ) { return r.headings.counts.h1 === 1 ? 1 : 0; }, function ( v, r ) { return r.headings.counts.h1 + ' H1'; }, 'high', 0, 'Use exactly one H1 that says what the page is about.' ],
+			[ 'Sections (H2–H3)', function ( r ) { return r.headings.counts.h2 + r.headings.counts.h3; }, String, 'high', 0.15, 'They break their content into more sections. Add H2/H3 sections that answer what customers ask.' ],
+			[ 'Words on page', function ( r ) { return r.page.words; }, function ( v ) { return fmt( v ); }, 'high', 0.1, 'They say more. Expand the page with useful detail: process, pricing, FAQs, proof.' ],
+			[ 'Images without alt', function ( r ) { return r.images.missing_alt; }, String, 'low', 0, 'Add alt text to your images. It helps image search and screen-reader users.' ],
+			[ 'Internal links', function ( r ) { return r.links.internal; }, String, 'high', 0.15, 'They link to more of their own pages. Link to related services, case studies and posts.' ],
+			[ 'Structured data types', function ( r ) { return schemaTypes( r ).length; }, String, 'high', 0, '' ],
+			[ 'Social sharing tags', function ( r ) { return ogComplete( r ) ? 1 : 0; }, function ( v ) { return v ? 'Complete' : 'Incomplete'; }, 'high', 0, 'Add og:title, og:description and og:image so shared links look good.' ],
+			[ 'Server response', function ( r ) { return r.page.time_ms; }, function ( v ) { return fmt( v ) + ' ms'; }, 'low', 0.15, 'Their HTML arrives faster. Check hosting, page caching and a CDN.' ],
+			[ 'HTML size', function ( r ) { return r.page.size_kb; }, function ( v ) { return v + ' KB'; }, 'low', 0.15, 'Their page is lighter. Remove unused plugins, builders\' extra markup and inline scripts.' ],
+			[ 'HTTPS', function ( r ) { return r.page.https ? 1 : 0; }, function ( v ) { return v ? 'Yes' : 'No'; }, 'high', 0, 'Move the site to HTTPS.' ],
+			[ 'Canonical link', function ( r ) { return r.meta.canonical ? 1 : 0; }, function ( v ) { return v ? 'Yes' : 'No'; }, 'high', 0, 'Add a canonical link so duplicates consolidate to this URL.' ],
+			[ 'XML sitemap', function ( r ) { return r.meta.sitemap.found ? 1 : 0; }, function ( v ) { return v ? 'Found' : 'Missing'; }, 'high', 0, 'Publish an XML sitemap and list it in robots.txt.' ],
+			[ 'Indexable', function ( r ) { return indexable( r ) ? 1 : 0; }, function ( v ) { return v ? 'Yes' : 'No'; }, 'high', 0, 'Your page is blocked from search engines. Remove noindex or the robots.txt rule.' ],
+		];
+		function winner( a, b, dir, tol ) {
+			if ( a === b ) {
+				return 0;
+			}
+			var base = Math.max( Math.abs( a ), Math.abs( b ), 1 );
+			if ( tol && Math.abs( a - b ) / base <= tol ) {
+				return 0;
+			}
+			return ( dir === 'high' ? a > b : a < b ) ? 1 : -1;
+		}
+
+		function renderCompare( you, them ) {
+			cmp.textContent = '';
+			cmp.hidden = false;
+			var rows = [];
+			var tally = { you: 0, them: 0, tie: 0 };
+			var behind = [];
+			var ahead = [];
+			metrics.forEach( function ( m ) {
+				var a = m[ 1 ]( you );
+				var b = m[ 1 ]( them );
+				var w = winner( a, b, m[ 3 ], m[ 4 ] );
+				tally[ w > 0 ? 'you' : w < 0 ? 'them' : 'tie' ]++;
+				var row = { label: m[ 0 ], a: m[ 2 ]( a, you ), b: m[ 2 ]( b, them ), w: w };
+				rows.push( row );
+				if ( w < 0 ) {
+					var tip = m[ 5 ];
+					if ( m[ 0 ] === 'Structured data types' ) {
+						var gap = schemaTypes( them ).filter( function ( t ) {
+							return schemaTypes( you ).indexOf( t ) === -1 && genericTypes.indexOf( t ) === -1;
+						} );
+						tip = gap.length ? 'They use structured data you don\'t: ' + gap.slice( 0, 6 ).join( ', ' ) + '. Adding it can earn rich results.' : 'They mark up more of the page with schema.org. Add the types that fit your page.';
+					}
+					behind.push( [ m[ 0 ], row.a, row.b, tip ] );
+				} else if ( w > 0 ) {
+					ahead.push( [ m[ 0 ], row.a, row.b ] );
+				}
+			} );
+			var youHost = you.page.host.replace( /^www\./, '' );
+			var themHost = them.page.host.replace( /^www\./, '' );
+
+			// Scoreboard.
+			var board = el( 'div', 'seo-vsboard' );
+			function side( r, host, who, wins ) {
+				var s = el( 'div', 'seo-vsboard__side seo-vsboard__side--' + who );
+				add( s, el( 'span', 'seo-vsboard__who', who === 'you' ? 'You' : 'Competitor' ), el( 'strong', 'seo-vsboard__host', host ), add( el( 'div', 'seo-vsboard__score' ), el( 'b', '', r.score === null ? '—' : r.score ), el( 'span', '', 'SEO score' ) ), el( 'span', 'seo-vsboard__wins', wins + ' ' + ( wins === 1 ? 'win' : 'wins' ) ) );
+				return s;
+			}
+			var verdict = tally.you > tally.them ? 'You lead on ' + tally.you + ' of ' + metrics.length + ' points.' : tally.you < tally.them ? 'They lead on ' + tally.them + ' of ' + metrics.length + ' points.' : 'Neck and neck: ' + tally.you + ' wins each.';
+			var mid = el( 'div', 'seo-vsboard__mid' );
+			add( mid, el( 'span', 'seo-vsboard__vs', 'VS' ), el( 'p', 'seo-vsboard__verdict', verdict ), el( 'p', 'seo-vsboard__tie', tally.tie + ' level' ) );
+			add( board, side( you, youHost, 'you', tally.you ), mid, side( them, themHost, 'them', tally.them ) );
+			cmp.appendChild( board );
+
+			// Gap lists.
+			var lists = el( 'div', 'seo-gaps' );
+			var lose = el( 'div', 'seo-card seo-gap seo-gap--behind' );
+			var loseHead = el( 'div', 'seo-card__head' );
+			add( loseHead, el( 'h3', 'bay-h3', 'Where they beat you' ), el( 'span', 'seo-tab__n is-bad', behind.length ) );
+			lose.appendChild( loseHead );
+			if ( ! behind.length ) {
+				lose.appendChild( el( 'p', 'seo-empty-note', 'Nowhere. You match or beat them on every point we measure.' ) );
+			}
+			behind.forEach( function ( g ) {
+				var it = el( 'div', 'seo-gap__item' );
+				add( it, el( 'strong', '', g[ 0 ] ), el( 'span', 'seo-gap__vals', 'You: ' + g[ 1 ] + ' · Them: ' + g[ 2 ] ), g[ 3 ] ? el( 'p', '', g[ 3 ] ) : null );
+				lose.appendChild( it );
+			} );
+			var win = el( 'div', 'seo-card seo-gap seo-gap--ahead' );
+			var winHead = el( 'div', 'seo-card__head' );
+			add( winHead, el( 'h3', 'bay-h3', 'Where you lead' ), el( 'span', 'seo-tab__n', ahead.length ) );
+			win.appendChild( winHead );
+			if ( ! ahead.length ) {
+				win.appendChild( el( 'p', 'seo-empty-note', 'Not yet. The list on the left is your plan.' ) );
+			}
+			ahead.forEach( function ( g ) {
+				var it = el( 'div', 'seo-gap__item' );
+				add( it, el( 'strong', '', g[ 0 ] ), el( 'span', 'seo-gap__vals', 'You: ' + g[ 1 ] + ' · Them: ' + g[ 2 ] ) );
+				win.appendChild( it );
+			} );
+			add( lists, lose, win );
+			cmp.appendChild( lists );
+
+			// Full table.
+			var det = el( 'details', 'seo-card seo-vstable' );
+			det.appendChild( el( 'summary', 'seo-card__head', 'All ' + metrics.length + ' points side by side' ) );
+			var wrap = el( 'div', 'seo-table-wrap' );
+			var t = el( 'table', 'seo-table' );
+			var hr = el( 'tr' );
+			[ 'Point', 'You · ' + youHost, 'Them · ' + themHost ].forEach( function ( h ) {
+				hr.appendChild( el( 'th', '', h ) );
+			} );
+			add( t, add( el( 'thead' ), hr ) );
+			var tb = el( 'tbody' );
+			rows.forEach( function ( r ) {
+				var tr = el( 'tr' );
+				add( tr, el( 'td', '', r.label ), el( 'td', r.w > 0 ? 'seo-win' : r.w < 0 ? 'seo-lose' : '', r.a ), el( 'td', r.w < 0 ? 'seo-win' : r.w > 0 ? 'seo-lose' : '', r.b ) );
+				tb.appendChild( tr );
+			} );
+			t.appendChild( tb );
+			wrap.appendChild( t );
+			det.appendChild( wrap );
+			cmp.appendChild( det );
+
+			// Which site the tabs below describe.
+			var sw = el( 'div', 'seo-switch' );
+			sw.appendChild( el( 'span', 'bay-mono', 'Details below for:' ) );
+			[ [ 'you', 'You · ' + youHost ], [ 'them', 'Competitor · ' + themHost ] ].forEach( function ( o, i ) {
+				var b = el( 'button', 'seo-filter', o[ 1 ] );
+				b.type = 'button';
+				b.setAttribute( 'aria-pressed', i === 0 ? 'true' : 'false' );
+				b.addEventListener( 'click', function () {
+					sw.querySelectorAll( 'button' ).forEach( function ( x ) {
+						x.setAttribute( 'aria-pressed', x === b ? 'true' : 'false' );
+					} );
+					renderTabs( reports[ o[ 0 ] ] );
+				} );
+				sw.appendChild( b );
+			} );
+			cmp.appendChild( sw );
+			bind( 'reportSide' ).textContent = 'You against ' + themHost + ': the scoreboard, where they beat you (with what to do), where you lead, then the full detail for either site.';
+		}
+
 		/* ---------- Pre-filled from a shared link */
+		if ( cfg.prefillVs ) {
+			vsInput.value = cfg.prefillVs;
+			vsOn( false );
+		}
 		if ( cfg.prefill ) {
 			input.value = cfg.prefill;
-			run( false );
+			run();
 		}
 	}
 } )();
