@@ -42,6 +42,7 @@ final class Audits_Table extends WP_List_Table {
 	public static function lead_statuses() {
 		return array(
 			'new'       => __( 'New', 'site-audit-report' ),
+			'booked'    => __( 'Booked a service', 'site-audit-report' ),
 			'contacted' => __( 'Contacted', 'site-audit-report' ),
 			'qualified' => __( 'Qualified', 'site-audit-report' ),
 			'won'       => __( 'Won', 'site-audit-report' ),

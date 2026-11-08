@@ -18,10 +18,11 @@ final class Crawler {
 	 * Crawls the site.
 	 *
 	 * @param string      $url  Submitted URL.
-	 * @param Http_Client $http Client.
+	 * @param Http_Client $http      Client.
+	 * @param int|null    $max_pages Pages to read, or null for the setting.
 	 * @return array<string,mixed> Crawl data for Scan_Context.
 	 */
-	public static function crawl( $url, Http_Client $http ) {
+	public static function crawl( $url, Http_Client $http, $max_pages = null ) {
 		$data = array(
 			'input_url'         => $url,
 			'final_url'         => $url,
@@ -80,7 +81,7 @@ final class Crawler {
 		$page            = Html_Page::parse( $home['body'], $home['url'] );
 		$data['pages'][] = $page;
 
-		self::read_sample( $page, $data, $http );
+		self::read_sample( $page, $data, $http, $max_pages );
 		self::read_feed( $page, $data, $http );
 
 		return $data;
@@ -241,8 +242,8 @@ final class Crawler {
 	 * @param Http_Client         $http Client.
 	 * @return void
 	 */
-	private static function read_sample( array $home, array &$data, Http_Client $http ) {
-		$max = (int) Settings::get( 'max_pages' );
+	private static function read_sample( array $home, array &$data, Http_Client $http, $max_pages = null ) {
+		$max = null === $max_pages ? (int) Settings::get( 'max_pages' ) : (int) $max_pages;
 
 		$links = array();
 		foreach ( $home['internal_links'] as $link ) {

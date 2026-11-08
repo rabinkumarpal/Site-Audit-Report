@@ -41,6 +41,11 @@ final class Scoring {
 				'weight'      => 15,
 				'description' => __( 'HTTPS, protective headers and the privacy pages visitors expect.', 'site-audit-report' ),
 			),
+			'wordpress'   => array(
+				'label'       => __( 'WordPress health', 'site-audit-report' ),
+				'weight'      => 15,
+				'description' => __( 'Core, plugin and theme versions the site shows publicly, matched against known vulnerabilities, plus common WordPress hardening.', 'site-audit-report' ),
+			),
 			'local'       => array(
 				'label'       => __( 'Reputation and local', 'site-audit-report' ),
 				'weight'      => 10,

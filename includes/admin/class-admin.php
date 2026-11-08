@@ -12,6 +12,7 @@ use Site_Audit_Report\Plugin;
 use Site_Audit_Report\Queue;
 use Site_Audit_Report\Report_Renderer;
 use Site_Audit_Report\Report_Route;
+use Site_Audit_Report\Service_Bay;
 use Site_Audit_Report\Settings;
 use Site_Audit_Report\Url_Guard;
 
@@ -414,6 +415,27 @@ final class Admin {
 							'<a href="https://developers.google.com/maps/documentation/places/web-service/get-api-key" target="_blank" rel="noopener">' . __( 'Get a key', 'site-audit-report' ) . '</a>'
 						)
 					);
+					?>
+				</table>
+
+				<h2><?php esc_html_e( 'Service Bay', 'site-audit-report' ); ?></h2>
+				<p>
+					<?php
+					printf(
+						/* translators: %s: shortcode. */
+						esc_html__( 'The Service Bay is a WordPress vulnerability check with a priced fix plan and booking form. Add it with %s. Prices below fill the fix tray.', 'site-audit-report' ),
+						'<code>[site_audit_service]</code>'
+					);
+					?>
+				</p>
+				<table class="form-table" role="presentation">
+					<?php
+					$text( 'service_currency', __( 'Currency symbol', 'site-audit-report' ) );
+					$text( 'service_period', __( 'Billing period word', 'site-audit-report' ), __( 'Shown as "per month". Use "month", "year" or similar.', 'site-audit-report' ) );
+					foreach ( Service_Bay::tools() as $tool_id => $tool ) {
+						$number( 'price_' . $tool_id, $tool['name'], 0, 10000000 );
+					}
+					$text( 'service_book_url', __( 'Calendar link (optional)', 'site-audit-report' ), __( 'If set, the booking confirmation offers this link (Calendly, Google Calendar and so on).', 'site-audit-report' ), 'url' );
 					?>
 				</table>
 

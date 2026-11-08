@@ -26,11 +26,48 @@ final class Scanner {
 	 *
 	 * @return Module[]
 	 */
-	public static function modules() {
+	public static function modules( array $audit = array() ) {
+		if ( self::is_service( $audit ) ) {
+			// The Service Bay runs a short, WordPress-focused inspection.
+			$modules = array(
+				new Modules\Wordpress(),
+				new Modules\Security(),
+			);
+			$modules = apply_filters( 'sar_service_modules', $modules, $audit );
+		} else {
+			$modules = self::full_modules();
+		}
+
+		$valid = array();
+		foreach ( (array) $modules as $module ) {
+			if ( $module instanceof Module ) {
+				$valid[ $module->id() ] = $module;
+			}
+		}
+		return $valid;
+	}
+
+	/**
+	 * Whether an audit came from the Service Bay.
+	 *
+	 * @param array<string,mixed> $audit Audit.
+	 * @return bool
+	 */
+	public static function is_service( array $audit ) {
+		return 'service' === ( $audit['source'] ?? '' );
+	}
+
+	/**
+	 * Modules for a full audit.
+	 *
+	 * @return array<int,mixed>
+	 */
+	private static function full_modules() {
 		$modules = array(
 			new Modules\Onpage(),
 			new Modules\Crawlability(),
 			new Modules\Security(),
+			new Modules\Wordpress(),
 			new Modules\Presence(),
 			new Modules\Links(),
 			new Modules\Places(),
@@ -45,15 +82,7 @@ final class Scanner {
 		 *
 		 * @param Module[] $modules Modules.
 		 */
-		$modules = apply_filters( 'sar_modules', $modules );
-
-		$valid = array();
-		foreach ( (array) $modules as $module ) {
-			if ( $module instanceof Module ) {
-				$valid[ $module->id() ] = $module;
-			}
-		}
-		return $valid;
+		return (array) apply_filters( 'sar_modules', $modules );
 	}
 
 	/**
@@ -94,11 +123,11 @@ final class Scanner {
 						'locked_at' => gmdate( 'Y-m-d H:i:s' ),
 					)
 				);
-				$state['crawl'] = Crawler::crawl( (string) $audit['site_url'], $http );
+				$state['crawl'] = Crawler::crawl( (string) $audit['site_url'], $http, self::is_service( $audit ) ? 1 : null );
 				self::save( $audit, $state, $http );
 			}
 
-			$modules = self::modules();
+			$modules = self::modules( $audit );
 			$total   = count( $modules );
 
 			foreach ( $modules as $module_id => $module ) {

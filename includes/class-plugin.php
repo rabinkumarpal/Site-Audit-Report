@@ -28,6 +28,7 @@ final class Plugin {
 		add_action( Installer::MAINTENANCE_HOOK, array( Installer::class, 'maintenance' ) );
 
 		Public_Form::register();
+		Service_Bay::register();
 		Report_Route::register();
 		Privacy::register();
 

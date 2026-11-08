@@ -46,6 +46,15 @@ final class Settings {
 			'ip_header'        => '',
 			'email_lead'       => 1,
 			'notify_email'     => '',
+			'service_currency' => '₹',
+			'service_period'   => 'month',
+			'price_patch'      => 1999,
+			'price_updates'    => 1499,
+			'price_harden'     => 999,
+			'price_ssl'        => 499,
+			'price_monitor'    => 699,
+			'price_backup'     => 799,
+			'service_book_url' => '',
 		);
 	}
 
@@ -137,6 +146,14 @@ final class Settings {
 
 		$header             = (string) ( $input['ip_header'] ?? '' );
 		$clean['ip_header'] = in_array( $header, array( 'HTTP_CF_CONNECTING_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_REAL_IP' ), true ) ? $header : '';
+
+		$clean['service_currency'] = mb_substr( sanitize_text_field( (string) ( $input['service_currency'] ?? '₹' ) ), 0, 5 );
+		$clean['service_period']   = sanitize_text_field( (string) ( $input['service_period'] ?? 'month' ) );
+		$clean['service_book_url'] = esc_url_raw( trim( (string) ( $input['service_book_url'] ?? '' ) ), array( 'http', 'https' ) );
+		foreach ( array( 'patch', 'updates', 'harden', 'ssl', 'monitor', 'backup' ) as $tool ) {
+			$key           = 'price_' . $tool;
+			$clean[ $key ] = isset( $input[ $key ] ) ? min( 10000000, absint( $input[ $key ] ) ) : (int) $current[ $key ];
+		}
 
 		$clean['email_lead']   = empty( $input['email_lead'] ) ? 0 : 1;
 		$clean['notify_email'] = sanitize_email( (string) ( $input['notify_email'] ?? '' ) );

@@ -4,7 +4,7 @@ Tags: seo audit, website audit, lead generation, pagespeed, site report
 Requires at least: 6.3
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -60,6 +60,23 @@ Without a key, requests share Google's anonymous quota, which is often already u
 4. Paste it in Site Audits > Settings.
 
 Google's terms limit how long some Places content may be stored, and require attribution. Reports credit Google and link to the Maps listing. Set your retention period with these terms in mind, and check them yourself before relying on this section commercially.
+
+== Service Bay (WordPress health check) ==
+
+Add `[site_audit_service]` to a full-width page. Visitors enter only a website address and, in about 20 to 30 seconds, see:
+
+1. **Inspection console**: server, CDN, WordPress version, theme, plugins seen, HTTPS, and a live board of passive checks.
+2. **Risk report**: core, theme and plugin versions the site shows publicly, matched against WPVulnerability.net (free, no key) and the CISA Known Exploited Vulnerabilities list, with severity, CVE links, days public and the fixed version. Plus hardening checks: version leak, public usernames, XML-RPC, readme.html, uploads listing, public debug.log and login address.
+3. **Fix plan**: services the report asks for are pre-selected with a reason. Visitors switch them on or off and the price follows.
+4. **Booking**: name, email, website, phone and notes. The audit is marked "Booked a service" in Site Audits and the team gets an email (Notify email, or the site admin email).
+
+The report has a private, shareable link (`?bay=<token>`). Checks of the same site within 30 minutes reuse the last result.
+
+Shortcode attributes: `examples` (comma-separated example sites for the "Try" chips) and `offset` (height in px of a fixed site header, so the sticky step rail clears it).
+
+Set prices, currency and an optional calendar link under Site Audits > Settings > Service Bay. Restyle it by overriding the `--bay-*` CSS variables on `.sar-bay`. Developers can change the tray with the `sar_service_tools` filter, the inspection with `sar_service_modules`, and react to bookings with the `sar_service_booked` action.
+
+Full audits now include a "WordPress health" section from the same module.
 
 == Limits and safeguards ==
 
@@ -128,6 +145,11 @@ Actions: `sar_audit_completed` (audit record, report data).
 Use `$context->http` for any request to an address taken from a scanned site. It applies the private-network protection; `wp_remote_get()` does not. Requests to a fixed vendor API can use the normal HTTP functions.
 
 == Changelog ==
+
+= 1.1.0 =
+* New: Service Bay shortcode `[site_audit_service]`: WordPress vulnerability check, risk report, priced fix plan and booking.
+* New: WordPress health module (core, theme and plugin versions vs WPVulnerability.net and CISA KEV, plus hardening checks), also used in full audits.
+* New: "Booked a service" lead status and Service Bay settings.
 
 = 1.0.0 =
 * First release.
