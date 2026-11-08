@@ -14,7 +14,7 @@ defined( 'ABSPATH' ) || exit;
  */
 final class Installer {
 
-	const DB_VERSION       = '3';
+	const DB_VERSION       = '4';
 	const MAINTENANCE_HOOK = 'sar_daily_maintenance';
 
 	/**
@@ -74,6 +74,7 @@ final class Installer {
 		$inv     = $wpdb->prefix . 'sar_inventory';
 		$alerts  = $wpdb->prefix . 'sar_alerts';
 		$badges  = $wpdb->prefix . 'sar_badges';
+		$mon     = $wpdb->prefix . 'sar_monitors';
 
 		dbDelta(
 			"CREATE TABLE {$audits} (
@@ -197,6 +198,26 @@ final class Installer {
 				KEY checked_at (checked_at)
 			) {$charset};"
 		);
+
+		// Change watch: a weekly fingerprint per client site and the history of what changed.
+		dbDelta(
+			"CREATE TABLE {$mon} (
+				id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+				site_url varchar(2048) NOT NULL,
+				domain varchar(190) NOT NULL,
+				audit_id bigint(20) unsigned NOT NULL DEFAULT 0,
+				label varchar(120) NOT NULL DEFAULT '',
+				active tinyint(1) NOT NULL DEFAULT 1,
+				snapshot longtext NULL,
+				changes longtext NULL,
+				checked_at datetime NULL,
+				last_change_at datetime NULL,
+				created_at datetime NOT NULL,
+				PRIMARY KEY  (id),
+				UNIQUE KEY domain (domain),
+				KEY checked_at (checked_at)
+			) {$charset};"
+		);
 	}
 
 	/**
@@ -213,5 +234,6 @@ final class Installer {
 		Queue::nudge();
 		Vuln_Watch::run();
 		Badges::run_due();
+		Monitors::run_due();
 	}
 }

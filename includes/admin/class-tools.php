@@ -247,7 +247,7 @@ final class Tools {
 				'icon'    => 'dashicons-search',
 				'name'    => __( 'SEO Inspector (single page)', 'site-audit-report' ),
 				'tag'     => 'site_audit_seo',
-				'what'    => __( 'An instant on-page report for any one URL in six tabs: Insights, Meta, Headers, Images, Links and Schema, with a score, filters, copy and CSV export. Add ?inspect=URL to the page address to run it straight away.', 'site-audit-report' ),
+				'what'    => __( 'An instant on-page report for any one URL in seven tabs: Insights, Meta, Headers, Images, Links, Schema and Accessibility, with a score, filters, copy and CSV export. Add ?inspect=URL to the page address to run it straight away.', 'site-audit-report' ),
 				'attrs'   => array(
 					'examples'  => __( 'Example sites for the "Try" chips.', 'site-audit-report' ),
 					'offset'    => __( 'Fixed header height in px.', 'site-audit-report' ),
@@ -352,6 +352,8 @@ final class Tools {
 						<tr><td><?php esc_html_e( 'Open, download or re-run a report', 'site-audit-report' ); ?></td><td><?php esc_html_e( 'Click the website name; or hover a row for View / Re-run / Inspect SEO', 'site-audit-report' ); ?></td></tr>
 						<tr><td><?php esc_html_e( 'See which leads are exposed to a newly published vulnerability', 'site-audit-report' ); ?></td><td><a href="<?php echo esc_url( admin_url( 'admin.php?page=' . Watch::SLUG ) ); ?>"><?php esc_html_e( 'Site Audits > Vulnerability watch', 'site-audit-report' ); ?></a> · <?php esc_html_e( 'checked daily; the team gets an email digest', 'site-audit-report' ); ?></td></tr>
 						<tr><td><?php esc_html_e( 'Give a client a self-checking "Secured by" badge for their site', 'site-audit-report' ); ?></td><td><a href="<?php echo esc_url( admin_url( 'admin.php?page=' . Badges_Page::SLUG ) ); ?>"><?php esc_html_e( 'Site Audits > Trust badges', 'site-audit-report' ); ?></a> · <?php esc_html_e( 'or "Create badge" on any audit row; re-checked weekly', 'site-audit-report' ); ?></td></tr>
+						<tr><td><?php esc_html_e( 'Hear when a client site changes (noindex, title, plugins, certificate…)', 'site-audit-report' ); ?></td><td><a href="<?php echo esc_url( admin_url( 'admin.php?page=' . Monitors_Page::SLUG ) ); ?>"><?php esc_html_e( 'Site Audits > Change watch', 'site-audit-report' ); ?></a> · <?php esc_html_e( 'weekly, with an email digest', 'site-audit-report' ); ?></td></tr>
+						<tr><td><?php esc_html_e( 'Check a page\'s accessibility', 'site-audit-report' ); ?></td><td><?php esc_html_e( 'SEO Inspector > Accessibility tab, or the Accessibility section of a full audit', 'site-audit-report' ); ?></td></tr>
 						<tr><td><?php esc_html_e( 'Check one page\'s SEO right now', 'site-audit-report' ); ?></td><td><a href="<?php echo esc_url( $seo ); ?>"><?php esc_html_e( 'Site Audits > SEO Inspector', 'site-audit-report' ); ?></a></td></tr>
 						<tr><td><?php esc_html_e( 'Run a full audit yourself (no rate limits, no email)', 'site-audit-report' ); ?></td><td><?php esc_html_e( 'Audits and leads > Run a new audit', 'site-audit-report' ); ?></td></tr>
 						<tr><td><?php esc_html_e( 'Get everything into a spreadsheet', 'site-audit-report' ); ?></td><td><?php esc_html_e( 'Audits and leads > Export CSV', 'site-audit-report' ); ?></td></tr>

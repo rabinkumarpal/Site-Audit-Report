@@ -271,6 +271,9 @@
 			count( 'images', d.images.total, d.images.missing_alt > 0 );
 			count( 'links', d.links.total, false );
 			count( 'schema', d.schema.types.length + d.schema.microdata.length, d.schema.invalid > 0 );
+			if ( d.a11y ) {
+				count( 'a11y', d.a11y.counts.fail + d.a11y.counts.warn, d.a11y.counts.fail > 0 );
+			}
 
 			renderInsights( d );
 			renderMeta( d );
@@ -278,6 +281,7 @@
 			renderImages( d );
 			renderLinks( d );
 			renderSchema( d );
+			renderA11y( d );
 			select( tabs[ 0 ] );
 		}
 
@@ -692,6 +696,64 @@
 				} );
 				box.appendChild( c );
 			}
+		}
+
+		function renderA11y( d ) {
+			var box = panel( 'a11y' );
+			box.textContent = '';
+			var a = d.a11y;
+			if ( ! a ) {
+				return;
+			}
+			box.appendChild( stats( [
+				[ 'Score', a.score === null ? '—' : a.score, a.score !== null && a.score < 60 ? 'is-bad' : a.score !== null && a.score < 85 ? 'is-warn' : '' ],
+				[ 'Errors', a.counts.fail, a.counts.fail ? 'is-bad' : '' ],
+				[ 'Warnings', a.counts.warn, a.counts.warn ? 'is-warn' : '' ],
+				[ 'Passed', a.counts.pass ],
+			], 'seo-stats--4' ) );
+			var c = card( 'Accessibility quick check' );
+			var list = el( 'div' );
+			function draw( f ) {
+				list.textContent = '';
+				var rows = a.checks.filter( function ( x ) {
+					return f === 'all' || ( f === 'issues' && ( x.status === 'fail' || x.status === 'warn' ) ) || x.status === f;
+				} );
+				if ( ! rows.length ) {
+					list.appendChild( el( 'p', 'seo-empty-note', 'Nothing in this filter.' ) );
+				}
+				rows.forEach( function ( x ) {
+					var item = el( 'div', 'seo-a11y' );
+					var head = el( 'div', 'seo-check' );
+					var label = el( 'strong' );
+					add( label, document.createTextNode( x.label + ' ' ), el( 'span', 'seo-wcag', 'WCAG ' + x.wcag ) );
+					add( head, el( 'span', 'bay-tick bay-tick--' + x.status, marks[ x.status ] ), label, el( 'p', '', x.detail ) );
+					item.appendChild( head );
+					if ( x.fix ) {
+						item.appendChild( el( 'p', 'seo-a11y__fix', x.fix ) );
+					}
+					if ( x.samples && x.samples.length ) {
+						var det = el( 'details', 'seo-a11y__samples' );
+						det.appendChild( el( 'summary', '', 'Show ' + x.samples.length + ( x.count > x.samples.length ? ' of ' + x.count : '' ) + ' element' + ( x.samples.length === 1 ? '' : 's' ) ) );
+						var ul = el( 'ul' );
+						x.samples.forEach( function ( s ) {
+							ul.appendChild( add( el( 'li' ), el( 'code', '', s ) ) );
+						} );
+						det.appendChild( ul );
+						item.appendChild( det );
+					}
+					list.appendChild( item );
+				} );
+			}
+			var nIssues = a.counts.fail + a.counts.warn;
+			var opts = [ [ 'issues', 'Issues ' + nIssues ], [ 'all', 'All ' + a.checks.length ], [ 'pass', 'Passed ' + a.counts.pass ] ];
+			if ( ! nIssues ) {
+				opts = [ opts[ 1 ], opts[ 0 ], opts[ 2 ] ]; // Nothing to fix: open on the full list.
+			}
+			c.querySelector( '.seo-card__head' ).appendChild( filters( opts, draw ) );
+			draw( nIssues ? 'issues' : 'all' );
+			c.appendChild( list );
+			c.appendChild( el( 'p', 'seo-more', a.limits ) );
+			box.appendChild( c );
 		}
 
 		/* ---------- Pre-filled from a shared link */

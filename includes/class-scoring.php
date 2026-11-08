@@ -46,6 +46,11 @@ final class Scoring {
 				'weight'      => 15,
 				'description' => __( 'Core, plugin and theme versions the site shows publicly, matched against known vulnerabilities, plus common WordPress hardening.', 'site-audit-report' ),
 			),
+			'accessibility' => array(
+				'label'       => __( 'Accessibility', 'site-audit-report' ),
+				'weight'      => 10,
+				'description' => __( 'Whether people using screen readers, keyboards or zoom can use the page: labels, alt text, landmarks, headings and more.', 'site-audit-report' ),
+			),
 			'local'       => array(
 				'label'       => __( 'Reputation and local', 'site-audit-report' ),
 				'weight'      => 10,

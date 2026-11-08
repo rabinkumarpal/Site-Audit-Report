@@ -138,7 +138,7 @@ final class Seo_Inspector {
 			$fail( $checked->get_error_code(), $checked->get_error_message(), 400 );
 		}
 
-		$key    = 'sar_seo_' . md5( $checked['url'] );
+		$key    = 'sar_seo2_' . md5( $checked['url'] );
 		$cached = get_transient( $key );
 		if ( is_array( $cached ) ) {
 			wp_send_json_success( $cached );
@@ -211,6 +211,7 @@ final class Seo_Inspector {
 		$images   = self::images( $xpath, $base );
 		$links    = self::links( $xpath, $base, $final );
 		$schema   = self::schema( $xpath );
+		$a11y     = A11y::analyze( $xpath ); // Before words(), which strips scripts and templates.
 		$words    = self::words( $dom, $xpath );
 
 		$meta['robots_txt'] = array(
@@ -253,6 +254,7 @@ final class Seo_Inspector {
 			'images'   => $images,
 			'links'    => $links,
 			'schema'   => $schema,
+			'a11y'     => $a11y,
 		);
 	}
 

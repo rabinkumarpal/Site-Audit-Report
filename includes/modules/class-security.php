@@ -197,7 +197,7 @@ final class Security implements Module {
 	 * @param string $url Site URL.
 	 * @return int Timestamp, or 0.
 	 */
-	private function read_certificate_expiry( $url ) {
+	public function read_certificate_expiry( $url ) {
 		if ( ! function_exists( 'openssl_x509_parse' ) || ! function_exists( 'stream_socket_client' ) ) {
 			return 0;
 		}

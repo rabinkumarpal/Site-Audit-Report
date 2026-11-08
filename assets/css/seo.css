@@ -207,3 +207,17 @@
 	.seo-cta { padding: 24px; }
 	.seo-cta__title { font-size: 22px; }
 }
+
+/* ---------- Accessibility tab */
+.seo-stats--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.seo-a11y { padding: 4px 22px 14px; border-top: 1px solid var(--bay-line); }
+.seo-a11y:first-child { border-top: 0; }
+.seo-a11y .seo-check { border-top: 0; }
+.seo-wcag { margin-left: 6px; padding: 2px 7px; border-radius: 6px; background: var(--bay-sage); font: 600 10px/1.4 var(--bay-mono-f); color: var(--bay-deep); vertical-align: 2px; white-space: nowrap; }
+.seo-a11y__fix { margin: 0 0 6px 40px; font-size: 13.5px; color: var(--bay-ink); }
+.seo-a11y__fix::before { content: "Fix → "; font: 600 11px/1 var(--bay-mono-f); color: var(--bay-deep); }
+.seo-a11y__samples { margin: 0 0 4px 40px; }
+.seo-a11y__samples summary { cursor: pointer; font-size: 12.5px; font-weight: 600; color: var(--bay-slate); }
+.seo-a11y__samples ul { margin: 8px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 4px; }
+.seo-a11y__samples code { display: block; padding: 6px 10px; border-radius: 8px; background: var(--bay-canvas); font: 500 12px/1.45 var(--bay-mono-f); color: var(--bay-ink); overflow-wrap: anywhere; }
+@media (max-width: 767px) { .seo-stats--4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } .seo-a11y { padding: 4px 16px 12px; } .seo-a11y__fix, .seo-a11y__samples { margin-left: 0; } }

@@ -183,7 +183,7 @@ final class Wordpress implements Module {
 				$readme = $http->fetch( $origin . '/wp-content/plugins/' . $slug . '/readme.txt', array( 'max_bytes' => 16384, 'timeout' => 6, 'range' => true ) );
 				$body   = ! empty( $readme['ok'] ) && ! preg_match( '#<html#i', substr( (string) $readme['body'], 0, 500 ) ) ? (string) $readme['body'] : '';
 				if ( preg_match( '/^===\s*(.+?)\s*===/m', $body, $m ) ) {
-					$name = trim( $m[1] );
+					$name = self::short_name( $m[1] );
 				}
 				if ( preg_match( '/^\s*Stable tag:\s*([0-9][0-9a-z.\-]*)/im', $body, $m ) ) {
 					$ver = $m[1];
@@ -845,6 +845,24 @@ final class Wordpress implements Module {
 		$parts = wp_parse_url( $url );
 		$port  = isset( $parts['port'] ) ? ':' . $parts['port'] : '';
 		return ( $parts['scheme'] ?? 'https' ) . '://' . ( $parts['host'] ?? '' ) . $port;
+	}
+
+	/**
+	 * A plugin's product name without its marketing tagline
+	 * ("Yoast SEO - Advanced SEO with…" becomes "Yoast SEO").
+	 *
+	 * @param string $name Name from readme.txt.
+	 * @return string
+	 */
+	public static function short_name( $name ) {
+		$name = trim( html_entity_decode( (string) $name, ENT_QUOTES ) );
+		if ( mb_strlen( $name ) > 28 ) {
+			$parts = preg_split( '/\s+[-–—|:]\s+/u', $name, 2 );
+			if ( isset( $parts[0] ) && mb_strlen( $parts[0] ) >= 3 ) {
+				$name = $parts[0];
+			}
+		}
+		return mb_substr( $name, 0, 60 );
 	}
 
 	/**

@@ -65,6 +65,7 @@ final class Scanner {
 	private static function full_modules() {
 		$modules = array(
 			new Modules\Onpage(),
+			new Modules\Accessibility(),
 			new Modules\Crawlability(),
 			new Modules\Security(),
 			new Modules\Wordpress(),

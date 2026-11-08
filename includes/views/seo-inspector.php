@@ -18,6 +18,7 @@ $sar_tabs = array(
 	'images'   => __( 'Images', 'site-audit-report' ),
 	'links'    => __( 'Links', 'site-audit-report' ),
 	'schema'   => __( 'Schema', 'site-audit-report' ),
+	'a11y'     => __( 'Accessibility', 'site-audit-report' ),
 );
 ?>
 <div class="sar-bay sar-seo<?php echo $compact ? ' sar-seo--compact' : ''; ?>" id="<?php echo esc_attr( $uid ); ?>" data-state="idle"<?php echo $style ? ' style="' . esc_attr( $style ) . '"' : ''; ?>>

@@ -4,7 +4,7 @@ Tags: seo audit, website audit, lead generation, pagespeed, site report
 Requires at least: 6.3
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.3.0
+Stable tag: 1.4.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -117,6 +117,22 @@ Give a client a "Secured by <your name>" badge for their site under Site Audits 
 * The weekly check covers HTTPS and the certificate, high or critical and actively exploited (CISA) vulnerabilities in the versions the site shows, a public debug log and a browsable uploads folder.
 * The reasons for "Under review" are never shown publicly. The team gets them by email when a badge changes state, and on the Trust badges screen.
 
+== Accessibility quick check ==
+
+The SEO Inspector has an Accessibility tab, and full audits have an Accessibility section. Both read the page's HTML and check 17 things against WCAG: page language and title, image alt text, link and button names (including icon-only ones), form labels (and placeholder-only fields), pinch-zoom, focusable items hidden with aria-hidden, the main landmark, heading structure, a skip link, vague link text such as "read more", iframe titles, positive tabindex, autoplaying sound, duplicate IDs used by labels or ARIA, and data-table headers. Each finding shows its WCAG reference, the fix and the offending elements.
+
+Colour contrast, keyboard traps and visible focus need a real browser, and the report says so.
+
+== Change watch ==
+
+Under Site Audits > Change watch (or "Watch changes" on any audit row), add the sites you look after. Adding one records a baseline; after that each site is fingerprinted weekly and compared with the week before.
+
+* Urgent: site not reachable, HTTPS stopped working, certificate expiring within 14 days, noindex added, robots.txt blocking the site, canonical pointing to another website.
+* Worth checking: home page address, title, description or H1 changed or emptied, text dropped by 30%, sitemap gone, analytics or structured data removed, security header removed, theme changed, WordPress or a plugin downgraded.
+* Notes and good news: plugins added or removed, WordPress, theme and plugin updates, certificate renewed, headers added.
+
+The team gets one email digest per run when urgent or notable changes are found. Each site keeps a dated history with before and after values. "Check all now" runs it on demand.
+
 == Limits and safeguards ==
 
 Each of these is a setting unless noted.
@@ -184,6 +200,11 @@ Actions: `sar_audit_completed` (audit record, report data).
 Use `$context->http` for any request to an address taken from a scanned site. It applies the private-network protection; `wp_remote_get()` does not. Requests to a fixed vendor API can use the normal HTTP functions.
 
 == Changelog ==
+
+= 1.4.0 =
+* New: Accessibility quick check (17 WCAG-mapped checks) as an SEO Inspector tab and a full-audit section.
+* New: Change watch, weekly fingerprints of client sites with change history, severity and an email digest.
+* Changed: plugin names in reports drop their marketing taglines.
 
 = 1.3.0 =
 * New: Trust badges, a self-checking "Secured by" badge with a public verification page, weekly re-checks, copy protection and private reasons.

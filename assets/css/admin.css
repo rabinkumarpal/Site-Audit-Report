@@ -185,3 +185,33 @@ a.sar-widget__tile:hover, a.sar-widget__tile:focus { background: #0d3826; color:
 .sar-badge__embed code { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; display: block; color: #50575e; font-size: 12px; }
 .sar-badge__embed { min-width: 0; }
 .sar-badge__embed code { flex: 1; min-width: 0; }
+
+/* ---------- Change watch */
+.sar-changes { max-width: 1100px; }
+.sar-monitor { margin: 14px 0; border-left: 5px solid #d1d5db; display: flex; flex-direction: column; gap: 12px; }
+.sar-monitor--critical { border-left-color: #dc2626; }
+.sar-monitor--warning { border-left-color: #f59e0b; }
+.sar-monitor--info { border-left-color: #38bdf8; }
+.sar-monitor--good, .sar-monitor--quiet { border-left-color: #10b981; }
+.sar-monitor.is-focus { box-shadow: 0 0 0 2px #0e9f6e; }
+.sar-monitor h2 small { font-weight: 400; color: #50575e; }
+.sar-monitor--critical .sar-badge__dot { background: #dc2626; }
+.sar-monitor--warning .sar-badge__dot { background: #f59e0b; }
+.sar-monitor--info .sar-badge__dot { background: #38bdf8; }
+.sar-monitor--good .sar-badge__dot, .sar-monitor--quiet .sar-badge__dot { background: #10b981; }
+.sar-monitor__facts { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 1px; margin: 0; border-radius: 10px; overflow: hidden; background: #dcdcde; border: 1px solid #dcdcde; }
+.sar-monitor__facts > div { padding: 10px 12px; background: #fff; min-width: 0; }
+.sar-monitor__facts dt { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: #787c82; }
+.sar-monitor__facts dd { margin: 2px 0 0; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sar-bad { color: #b91c1c; }
+.sar-monitor__log summary { cursor: pointer; font-weight: 600; }
+.sar-monitor__day { margin-top: 10px; }
+.sar-monitor__date { margin: 0 0 4px; font-size: 12px; font-weight: 600; color: #787c82; }
+.sar-monitor__day ul { margin: 0; }
+.sar-monitor__day li { display: flex; gap: 10px; align-items: flex-start; padding: 6px 0; margin: 0; border-top: 1px solid #f0f0f1; }
+.sar-monitor__day del { color: #b91c1c; } .sar-monitor__day ins { color: #0e7a55; text-decoration: none; }
+.sar-chg { flex: 0 0 56px; text-align: center; padding: 2px 6px; border-radius: 999px; font-size: 11px; font-weight: 700; background: #e0f2fe; color: #0369a1; }
+.sar-chg--critical { background: #fee2e2; color: #b91c1c; }
+.sar-chg--warning { background: #fef3c7; color: #92400e; }
+.sar-chg--good { background: #d1fae5; color: #0e7a55; }
+@media (max-width: 960px) { .sar-monitor__facts { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
