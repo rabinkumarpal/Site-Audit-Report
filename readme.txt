@@ -4,7 +4,7 @@ Tags: seo audit, website audit, lead generation, pagespeed, site report
 Requires at least: 6.3
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.6.1
+Stable tag: 1.6.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -72,11 +72,11 @@ Add `[site_audit_security]` to a full-width page. Visitors enter only a website 
 3. **Fix plan**: services the report asks for are pre-selected with a reason. Visitors switch them on or off and the price follows.
 4. **Booking**: name, email, website, phone and notes. The audit is marked "Booked a service" in Site Audits and the team gets an email (Notify email, or the site admin email).
 
-The report has a private, shareable link (`?bay=<token>`). Checks of the same site within 30 minutes reuse the last result.
+The report has a private, shareable link (`?rabin=<token>`; older `?bay=` links still work). Checks of the same site within 30 minutes reuse the last result.
 
 Shortcode attributes: `examples` (comma-separated example sites for the "Try" chips) and `offset` (height in px of a fixed site header, so the sticky step rail clears it).
 
-Set prices, currency and an optional calendar link under Site Audits > Settings > Security Check. Restyle it by overriding the `--bay-*` CSS variables on `.sar-bay`. Developers can change the tray with the `sar_service_tools` filter, the inspection with `sar_service_modules`, and react to bookings with the `sar_service_booked` action.
+Set prices, currency and an optional calendar link under Site Audits > Settings > Security Check. Restyle it by overriding the `--rabin-*` CSS variables on `.sar-rabin`. Developers can change the tray with the `sar_service_tools` filter, the inspection with `sar_service_modules`, and react to bookings with the `sar_service_booked` action.
 
 Full audits now include a "WordPress health" section from the same module.
 
@@ -231,6 +231,9 @@ Actions: `sar_audit_completed` (audit record, report data).
 Use `$context->http` for any request to an address taken from a scanned site. It applies the private-network protection; `wp_remote_get()` does not. Requests to a fixed vendor API can use the normal HTTP functions.
 
 == Changelog ==
+
+= 1.6.2 =
+* Changed: internal names use "rabin" instead of "bay": Service_Rabin class and files, rabin-* CSS classes, --rabin-* CSS variables, .sar-rabin wrapper and the ?rabin= report link. Old ?bay= links and the [site_audit_service] shortcode still work. Custom CSS that overrode --bay-* variables needs renaming to --rabin-*.
 
 = 1.6.1 =
 * Fixed: the "this site" shortcut in the SEO Inspector and Security Check is hidden when the site runs on localhost or a private network, where it could only be refused.

@@ -95,7 +95,7 @@ final class Seo_Inspector {
 		$uid      = wp_unique_id( 'sarseo-' );
 		$examples = array_filter( array_map( 'trim', explode( ',', (string) $atts['examples'] ) ) );
 		$offset   = '' !== (string) $atts['offset'] ? absint( $atts['offset'] ) : null;
-		$style    = null !== $offset ? '--bay-rail-top:' . ( $offset + 26 ) . 'px' : '';
+		$style    = null !== $offset ? '--rabin-rail-top:' . ( $offset + 26 ) . 'px' : '';
 		$cta_url  = (string) $atts['cta_url'];
 		$compact  = ! empty( $atts['compact'] );
 		$cta_text = '' !== (string) $atts['cta_label'] ? (string) $atts['cta_label'] : __( 'Get the full site audit', 'site-audit-report' );

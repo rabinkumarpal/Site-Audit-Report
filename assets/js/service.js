@@ -2,7 +2,7 @@
 ( function () {
 	'use strict';
 
-	var cfg = window.sarBay;
+	var cfg = window.sarRabin;
 	if ( ! cfg || ! window.fetch ) {
 		return;
 	}
@@ -34,7 +34,7 @@
 		} );
 	}
 
-	document.querySelectorAll( '.sar-bay' ).forEach( init );
+	document.querySelectorAll( '.sar-rabin' ).forEach( init );
 
 	function init( root ) {
 		var $ = function ( sel ) {
@@ -45,10 +45,10 @@
 		};
 
 		var state = { token: '', data: null, picked: {}, recommended: {}, touched: false, timer: 0, started: 0 };
-		var plate = $( '.bay-plate' );
-		var input = $( '.bay-plate__input' );
-		var go = $( '.bay-plate__go' );
-		var msg = $( '.bay-plate__msg' );
+		var plate = $( '.rabin-plate' );
+		var input = $( '.rabin-plate__input' );
+		var go = $( '.rabin-plate__go' );
+		var msg = $( '.rabin-plate__msg' );
 
 		/* ---------- Scan */
 		plate.addEventListener( 'submit', function ( e ) {
@@ -72,7 +72,7 @@
 			}
 			go.disabled = true;
 			resetConsole( url );
-			post( 'sar_service_start', { nonce: cfg.nonce, url: url, sar_company_site: root.querySelector( '.bay-plate .bay-hp' ).value } )
+			post( 'sar_service_start', { nonce: cfg.nonce, url: url, sar_company_site: root.querySelector( '.rabin-plate .rabin-hp' ).value } )
 				.then( function ( json ) {
 					if ( json.success ) {
 						follow( json.data.token, true );
@@ -115,7 +115,7 @@
 
 		function setMeter( pct ) {
 			bind( 'meter' ).style.width = pct + '%';
-			$( '.bay-meter' ).setAttribute( 'aria-valuenow', String( pct ) );
+			$( '.rabin-meter' ).setAttribute( 'aria-valuenow', String( pct ) );
 		}
 
 		function follow( token, push ) {
@@ -164,7 +164,7 @@
 				input.value = d.site.domain;
 			}
 			setMeter( done ? 100 : Math.max( 4, d.progress ) );
-			bind( 'stage' ).textContent = failed ? ( d.error || t.error ) : done ? 'Inspection complete · ' + ( d.site.at || '' ) : ( d.stage || 'Waiting for a free bay…' ) + '…';
+			bind( 'stage' ).textContent = failed ? ( d.error || t.error ) : done ? 'Inspection complete · ' + ( d.site.at || '' ) : ( d.stage || 'Waiting to start…' ) + '…';
 			bind( 'badge' ).textContent = failed ? 'Stopped' : done ? 'Done' : 'Live';
 			root.setAttribute( 'data-state', done ? 'done' : failed ? 'failed' : 'running' );
 
@@ -184,7 +184,7 @@
 				bind( 'toReport' ).hidden = false;
 				drawReport( d );
 				applyRecommendations( d.recommend || {} );
-				var web = root.querySelector( '.bay-form [name=website]' );
+				var web = root.querySelector( '.rabin-form [name=website]' );
 				if ( web && ! web.value ) {
 					web.value = d.site.url;
 				}
@@ -218,7 +218,7 @@
 				if ( status !== 'pending' ) {
 					seen++;
 				}
-				li.appendChild( el( 'span', 'bay-tick bay-tick--' + status, marks[ status ] || '' ) );
+				li.appendChild( el( 'span', 'rabin-tick rabin-tick--' + status, marks[ status ] || '' ) );
 				li.appendChild( el( 'span', '', item.label ) );
 				li.title = item.evidence || item.label;
 				list.appendChild( li );
@@ -263,7 +263,7 @@
 				[ 'kev', v.kev, 'Exploited (CISA)' ],
 				[ 'days', v.oldest, 'Oldest, days public' ],
 			].forEach( function ( row ) {
-				var tile = el( 'div', 'bay-tile bay-tile--' + row[ 0 ] + ( row[ 1 ] ? '' : ' is-zero' ) );
+				var tile = el( 'div', 'rabin-tile rabin-tile--' + row[ 0 ] + ( row[ 1 ] ? '' : ' is-zero' ) );
 				tile.appendChild( el( 'b', '', row[ 1 ] ) );
 				tile.appendChild( el( 'span', '', row[ 2 ] ) );
 				tiles.appendChild( tile );
@@ -274,7 +274,7 @@
 
 			var u = new URL( window.location.href );
 			u.searchParams.set( cfg.param, d.token );
-			u.hash = 'bay-report';
+			u.hash = 'rabin-report';
 			bind( 'shareUrl' ).textContent = u.toString();
 		}
 
@@ -315,7 +315,7 @@
 			var rows = d.components || [];
 			bind( 'sheetMeta' ).textContent = rows.length + ' seen';
 			if ( ! rows.length ) {
-				var none = el( 'p', 'bay-detail__note', d.inspection.isWp === false ? 'Not a WordPress site.' : 'No core, theme or plugin versions are visible from outside.' );
+				var none = el( 'p', 'rabin-detail__note', d.inspection.isWp === false ? 'Not a WordPress site.' : 'No core, theme or plugin versions are visible from outside.' );
 				none.style.padding = '24px';
 				wrap.appendChild( none );
 				return;
@@ -325,37 +325,37 @@
 				if ( i === 0 && r.count ) {
 					det.open = true;
 				}
-				var sum = el( 'summary', 'bay-row' );
-				sum.appendChild( el( 'span', 'bay-row__icon', r.type === 'core' ? 'WP' : r.type === 'theme' ? 'TH' : 'PL' ) );
-				var name = el( 'span', 'bay-row__name' );
+				var sum = el( 'summary', 'rabin-row' );
+				sum.appendChild( el( 'span', 'rabin-row__icon', r.type === 'core' ? 'WP' : r.type === 'theme' ? 'TH' : 'PL' ) );
+				var name = el( 'span', 'rabin-row__name' );
 				name.appendChild( el( 'strong', '', r.name ) );
 				name.appendChild( el( 'small', '', r.type + ' · ' + r.slug + ( r.found_by && r.found_by.indexOf( 'page' ) === -1 && r.found_by.indexOf( 'rest' ) !== -1 ? ' · found via REST API' : '' ) ) );
 				sum.appendChild( name );
-				var ver = el( 'span', 'bay-row__ver', r.version || t.hidden );
+				var ver = el( 'span', 'rabin-row__ver', r.version || t.hidden );
 				ver.appendChild( el( 'small', '', r.version ? t.versionSrc + ' ' + r.source : 'not matched' ) );
 				sum.appendChild( ver );
-				var sevs = el( 'span', 'bay-sevs' );
+				var sevs = el( 'span', 'rabin-sevs' );
 				if ( r.kev ) {
-					sevs.appendChild( el( 'span', 'bay-sev bay-sev--kev', 'Exploited' ) );
+					sevs.appendChild( el( 'span', 'rabin-sev rabin-sev--kev', 'Exploited' ) );
 				}
 				if ( r.count ) {
-					sevs.appendChild( el( 'span', 'bay-sev bay-sev--' + r.worst, r.count + ' × ' + r.worst ) );
+					sevs.appendChild( el( 'span', 'rabin-sev rabin-sev--' + r.worst, r.count + ' × ' + r.worst ) );
 				} else if ( r.outdated ) {
-					sevs.appendChild( el( 'span', 'bay-sev bay-sev--update', t.update ) );
+					sevs.appendChild( el( 'span', 'rabin-sev rabin-sev--update', t.update ) );
 				} else {
-					sevs.appendChild( el( 'span', 'bay-sev', r.version ? t.upToDate : '—' ) );
+					sevs.appendChild( el( 'span', 'rabin-sev', r.version ? t.upToDate : '—' ) );
 				}
 				sum.appendChild( sevs );
-				sum.appendChild( el( 'span', 'bay-row__arrow', '+' ) );
+				sum.appendChild( el( 'span', 'rabin-row__arrow', '+' ) );
 				det.appendChild( sum );
 
-				var body = el( 'div', 'bay-detail' );
+				var body = el( 'div', 'rabin-detail' );
 				if ( r.count ) {
 					( r.matches || [] ).forEach( function ( m ) {
-						var row = el( 'div', 'bay-vuln' );
-						row.appendChild( el( 'span', 'bay-vuln__name', m.name ) );
-						row.appendChild( el( 'span', 'bay-sev bay-sev--' + m.severity, ( m.score ? m.score.toFixed( 1 ) + ' ' : '' ) + m.severity ) );
-						var meta = el( 'div', 'bay-vuln__meta' );
+						var row = el( 'div', 'rabin-vuln' );
+						row.appendChild( el( 'span', 'rabin-vuln__name', m.name ) );
+						row.appendChild( el( 'span', 'rabin-sev rabin-sev--' + m.severity, ( m.score ? m.score.toFixed( 1 ) + ' ' : '' ) + m.severity ) );
+						var meta = el( 'div', 'rabin-vuln__meta' );
 						if ( m.range ) {
 							meta.appendChild( el( 'span', '', m.range ) );
 						}
@@ -377,14 +377,14 @@
 						body.appendChild( row );
 					} );
 					if ( r.count > ( r.matches || [] ).length ) {
-						body.appendChild( el( 'p', 'bay-detail__note', '+ ' + ( r.count - r.matches.length ) + ' ' + t.more ) );
+						body.appendChild( el( 'p', 'rabin-detail__note', '+ ' + ( r.count - r.matches.length ) + ' ' + t.more ) );
 					}
 				} else if ( r.outdated ) {
-					body.appendChild( el( 'p', 'bay-detail__note', 'No known holes in ' + r.version + ', but ' + r.latest + ' is out. Updating now keeps you ahead of the next disclosure.' ) );
+					body.appendChild( el( 'p', 'rabin-detail__note', 'No known holes in ' + r.version + ', but ' + r.latest + ' is out. Updating now keeps you ahead of the next disclosure.' ) );
 				} else if ( ! r.version ) {
-					body.appendChild( el( 'p', 'bay-detail__note', 'This item hides its version, which is good practice, but it means we cannot match it. We check it by hand when you book.' ) );
+					body.appendChild( el( 'p', 'rabin-detail__note', 'This item hides its version, which is good practice, but it means we cannot match it. We check it by hand when you book.' ) );
 				} else {
-					body.appendChild( el( 'p', 'bay-detail__note', 'No published vulnerabilities for ' + r.version + ( r.latest ? ' (latest ' + r.latest + ').' : '.' ) ) );
+					body.appendChild( el( 'p', 'rabin-detail__note', 'No published vulnerabilities for ' + r.version + ( r.latest ? ' (latest ' + r.latest + ').' : '.' ) ) );
 				}
 				det.appendChild( body );
 				wrap.appendChild( det );
@@ -397,8 +397,8 @@
 			var items = d.issues || [];
 			bind( 'issuesMeta' ).textContent = items.length ? items.length + ' to fix' : 'All passed';
 			if ( ! items.length ) {
-				var ok = el( 'div', 'bay-issue' );
-				ok.appendChild( el( 'span', 'bay-tick bay-tick--pass', '✓' ) );
+				var ok = el( 'div', 'rabin-issue' );
+				ok.appendChild( el( 'span', 'rabin-tick rabin-tick--pass', '✓' ) );
 				var txt = el( 'div' );
 				txt.appendChild( el( 'h4', '', 'No hardening gaps found' ) );
 				txt.appendChild( el( 'p', '', 'Usernames, XML-RPC, debug logs, folder listings and HTTPS all look right from outside.' ) );
@@ -407,8 +407,8 @@
 				return;
 			}
 			items.forEach( function ( item ) {
-				var box = el( 'div', 'bay-issue' );
-				box.appendChild( el( 'span', 'bay-tick bay-tick--' + item.status, marks[ item.status ] ) );
+				var box = el( 'div', 'rabin-issue' );
+				box.appendChild( el( 'span', 'rabin-tick rabin-tick--' + item.status, marks[ item.status ] ) );
 				var txt = el( 'div' );
 				txt.appendChild( el( 'h4', '', item.label ) );
 				txt.appendChild( el( 'p', '', item.evidence + ( item.items && item.items.length ? ' (' + item.items.join( ', ' ) + ')' : '' ) ) );
@@ -447,19 +447,19 @@
 		var tray = bind( 'tray' );
 		var toolEls = {};
 		cfg.tools.forEach( function ( tool ) {
-			var card = el( 'button', 'bay-tool' );
+			var card = el( 'button', 'rabin-tool' );
 			card.type = 'button';
 			card.setAttribute( 'aria-pressed', 'false' );
-			var top = el( 'div', 'bay-tool__top' );
-			top.appendChild( el( 'h3', 'bay-tool__name', tool.name ) );
-			top.appendChild( el( 'span', 'bay-tool__switch' ) );
+			var top = el( 'div', 'rabin-tool__top' );
+			top.appendChild( el( 'h3', 'rabin-tool__name', tool.name ) );
+			top.appendChild( el( 'span', 'rabin-tool__switch' ) );
 			card.appendChild( top );
-			card.appendChild( el( 'p', 'bay-tool__desc', tool.desc ) );
-			var foot = el( 'div', 'bay-tool__foot' );
-			var price = el( 'span', 'bay-tool__price', money( tool.price ) + ' ' );
+			card.appendChild( el( 'p', 'rabin-tool__desc', tool.desc ) );
+			var foot = el( 'div', 'rabin-tool__foot' );
+			var price = el( 'span', 'rabin-tool__price', money( tool.price ) + ' ' );
 			price.appendChild( el( 'small', '', '/ ' + cfg.period ) );
 			foot.appendChild( price );
-			var why = el( 'span', 'bay-tool__why' );
+			var why = el( 'span', 'rabin-tool__why' );
 			why.hidden = true;
 			foot.appendChild( why );
 			card.appendChild( foot );
@@ -522,12 +522,12 @@
 		drawTicket();
 
 		/* ---------- Booking */
-		var form = $( '.bay-form' );
-		var formMsg = $( '.bay-form__msg' );
+		var form = $( '.rabin-form' );
+		var formMsg = $( '.rabin-form__msg' );
 		form.addEventListener( 'submit', function ( e ) {
 			e.preventDefault();
 			formMsg.textContent = '';
-			root.querySelectorAll( '.bay-field.is-error' ).forEach( function ( f ) {
+			root.querySelectorAll( '.rabin-field.is-error' ).forEach( function ( f ) {
 				f.classList.remove( 'is-error' );
 			} );
 			var btn = form.querySelector( 'button[type=submit]' );
@@ -547,7 +547,7 @@
 				tools: Object.keys( state.picked ).filter( function ( k ) {
 					return state.picked[ k ];
 				} ).join( ',' ),
-				sar_company_site: form.querySelector( '.bay-hp' ).value,
+				sar_company_site: form.querySelector( '.rabin-hp' ).value,
 			};
 			post( 'sar_service_book', fields )
 				.then( function ( json ) {
@@ -558,8 +558,8 @@
 						if ( bad ) {
 							Object.keys( bad ).forEach( function ( k ) {
 								var f = form.querySelector( '[name=' + k + ']' );
-								if ( f && f.closest( '.bay-field' ) ) {
-									f.closest( '.bay-field' ).classList.add( 'is-error' );
+								if ( f && f.closest( '.rabin-field' ) ) {
+									f.closest( '.rabin-field' ).classList.add( 'is-error' );
 								}
 							} );
 							var first = form.querySelector( '[name=' + Object.keys( bad )[ 0 ] + ']' );
@@ -570,7 +570,7 @@
 						return;
 					}
 					form.hidden = true;
-					var done = $( '.bay-booked' );
+					var done = $( '.rabin-booked' );
 					done.hidden = false;
 					bind( 'bookedText' ).textContent = 'Thanks, ' + json.data.name + '. A senior engineer will read your report and get back to you within one working day' + ( json.data.tools.length ? ' about:' : '.' );
 					var list = bind( 'bookedList' );
@@ -596,14 +596,14 @@
 		} );
 
 		/* ---------- Step rail */
-		var steps = root.querySelectorAll( '.bay-rail__step' );
+		var steps = root.querySelectorAll( '.rabin-rail__step' );
 		function markSteps( upto ) {
 			steps.forEach( function ( s ) {
 				s.classList.toggle( 'is-done', Number( s.getAttribute( 'data-step' ) ) < upto );
 			} );
 		}
 		if ( 'IntersectionObserver' in window ) {
-			var map = { 'bay-scan': 1, 'bay-report': 3, 'bay-plan': 4, 'bay-book': 5 };
+			var map = { 'rabin-scan': 1, 'rabin-report': 3, 'rabin-plan': 4, 'rabin-book': 5 };
 			var io = new IntersectionObserver( function ( entries ) {
 				entries.forEach( function ( en ) {
 					if ( en.isIntersecting ) {

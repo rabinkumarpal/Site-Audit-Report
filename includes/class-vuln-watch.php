@@ -440,7 +440,7 @@ final class Vuln_Watch {
 			foreach ( $alerts as $a ) {
 				$items[] = sprintf( '- %s %s: %s (%s)%s', $a['name'], $a['version'], $a['vuln_name'], $a['severity'], $a['fixed'] ? ', fixed in ' . $a['fixed'] : '' );
 			}
-			$link = 'service' === $audit['source'] ? add_query_arg( Service_Bay::PARAM, $audit['token'], $page ) : $page;
+			$link = 'service' === $audit['source'] ? add_query_arg( Service_Rabin::PARAM, $audit['token'], $page ) : $page;
 			/* translators: %s: domain. */
 			$subject = sprintf( __( 'Security notice for %s', 'site-audit-report' ), $audit['domain'] );
 			$body    = sprintf(

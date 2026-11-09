@@ -12,7 +12,7 @@ use Site_Audit_Report\Plugin;
 use Site_Audit_Report\Queue;
 use Site_Audit_Report\Report_Renderer;
 use Site_Audit_Report\Report_Route;
-use Site_Audit_Report\Service_Bay;
+use Site_Audit_Report\Service_Rabin;
 use Site_Audit_Report\Settings;
 use Site_Audit_Report\Url_Guard;
 
@@ -497,7 +497,7 @@ final class Admin {
 					<?php
 					$text( 'service_currency', __( 'Currency symbol', 'site-audit-report' ) );
 					$text( 'service_period', __( 'Billing period word', 'site-audit-report' ), __( 'Shown as "per month". Use "month", "year" or similar.', 'site-audit-report' ) );
-					foreach ( Service_Bay::tools() as $tool_id => $tool ) {
+					foreach ( Service_Rabin::tools() as $tool_id => $tool ) {
 						$number( 'price_' . $tool_id, $tool['name'], 0, 10000000 );
 					}
 					$text( 'service_book_url', __( 'Calendar link (optional)', 'site-audit-report' ), __( 'If set, the booking confirmation offers this link (Calendly, Google Calendar and so on).', 'site-audit-report' ), 'url' );

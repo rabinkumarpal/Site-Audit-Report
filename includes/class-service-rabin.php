@@ -19,11 +19,12 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Security Check.
  */
-final class Service_Bay {
+final class Service_Rabin {
 
 	const NONCE_ACTION = 'sar_service';
 	const HONEYPOT     = 'sar_company_site';
-	const PARAM        = 'bay';
+	const PARAM        = 'rabin';
+	const LEGACY_PARAM = 'bay'; // Links shared before the rename still open.
 
 	/**
 	 * Registers hooks.
@@ -122,11 +123,12 @@ final class Service_Bay {
 		}
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; validated as 64 hex characters.
-		$token = isset( $_GET[ self::PARAM ] ) ? strtolower( preg_replace( '/[^a-f0-9]/i', '', (string) wp_unslash( $_GET[ self::PARAM ] ) ) ) : '';
+		$raw   = isset( $_GET[ self::PARAM ] ) ? $_GET[ self::PARAM ] : ( isset( $_GET[ self::LEGACY_PARAM ] ) ? $_GET[ self::LEGACY_PARAM ] : '' ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Read-only; reduced to hex below.
+		$token = strtolower( preg_replace( '/[^a-f0-9]/i', '', (string) wp_unslash( $raw ) ) );
 
 		wp_localize_script(
 			'site-audit-service',
-			'sarBay',
+			'sarRabin',
 			array(
 				'ajaxUrl'  => admin_url( 'admin-ajax.php' ),
 				'nonce'    => wp_create_nonce( self::NONCE_ACTION ),
@@ -164,15 +166,15 @@ final class Service_Bay {
 			)
 		);
 
-		$uid      = wp_unique_id( 'sarbay-' );
+		$uid      = wp_unique_id( 'sarrabin-' );
 		$examples = array_filter( array_map( 'trim', explode( ',', (string) $atts['examples'] ) ) );
 		$privacy  = get_privacy_policy_url();
 		// Space a fixed site header needs, so the sticky step rail and anchors clear it.
 		$offset = '' !== (string) $atts['offset'] ? absint( $atts['offset'] ) : null;
-		$style  = null !== $offset ? '--bay-rail-top:' . ( $offset + 26 ) . 'px' : '';
+		$style  = null !== $offset ? '--rabin-rail-top:' . ( $offset + 26 ) . 'px' : '';
 
 		ob_start();
-		include SAR_DIR . 'includes/views/service-bay.php';
+		include SAR_DIR . 'includes/views/service-rabin.php';
 		return (string) ob_get_clean();
 	}
 

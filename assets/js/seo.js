@@ -106,7 +106,7 @@
 	function card( title, tools ) {
 		var c = el( 'div', 'seo-card' );
 		var head = el( 'div', 'seo-card__head' );
-		add( head, el( 'h3', 'bay-h3', title ), tools || null );
+		add( head, el( 'h3', 'rabin-h3', title ), tools || null );
 		c.appendChild( head );
 		return c;
 	}
@@ -135,10 +135,10 @@
 		var panel = function ( n ) {
 			return root.querySelector( '[data-panel="' + n + '"]' );
 		};
-		var form = $( '.bay-plate' );
-		var input = $( '.bay-plate__input' );
-		var go = $( '.bay-plate__go' );
-		var msg = $( '.bay-plate__msg' );
+		var form = $( '.rabin-plate' );
+		var input = $( '.rabin-plate__input' );
+		var go = $( '.rabin-plate__go' );
+		var msg = $( '.rabin-plate__msg' );
 
 		form.addEventListener( 'submit', function ( e ) {
 			e.preventDefault();
@@ -384,7 +384,7 @@
 					grp.appendChild( el( 'p', 'seo-group__title', groups[ g ] ) );
 					items.forEach( function ( x ) {
 						shown++;
-						add( grp, add( el( 'div', 'seo-check' ), el( 'span', 'bay-tick bay-tick--' + x.status, marks[ x.status ] ), el( 'strong', '', x.label ), el( 'p', '', x.detail ) ) );
+						add( grp, add( el( 'div', 'seo-check' ), el( 'span', 'rabin-tick rabin-tick--' + x.status, marks[ x.status ] ), el( 'strong', '', x.label ), el( 'p', '', x.detail ) ) );
 					} );
 					list.appendChild( grp );
 				} );
@@ -731,11 +731,11 @@
 				types.appendChild( el( 'span', 'seo-type seo-type--micro', t + ' · microdata' ) );
 			} );
 			if ( ! s.types.length && ! s.microdata.length ) {
-				types.appendChild( el( 'p', 'bay-body', 'No schema.org markup on this page. Organization, WebSite, BreadcrumbList and the type that fits the page (Article, Product, LocalBusiness, FAQPage…) are good places to start.' ) );
+				types.appendChild( el( 'p', 'rabin-body', 'No schema.org markup on this page. Organization, WebSite, BreadcrumbList and the type that fits the page (Article, Product, LocalBusiness, FAQPage…) are good places to start.' ) );
 			}
 			body.appendChild( types );
 			if ( s.rdfa ) {
-				body.appendChild( el( 'p', 'bay-body', s.rdfa + ' element(s) use RDFa (typeof).' ) );
+				body.appendChild( el( 'p', 'rabin-body', s.rdfa + ' element(s) use RDFa (typeof).' ) );
 			}
 			top.appendChild( body );
 			box.appendChild( top );
@@ -789,7 +789,7 @@
 					var head = el( 'div', 'seo-check' );
 					var label = el( 'strong' );
 					add( label, document.createTextNode( x.label + ' ' ), el( 'span', 'seo-wcag', 'WCAG ' + x.wcag ) );
-					add( head, el( 'span', 'bay-tick bay-tick--' + x.status, marks[ x.status ] ), label, el( 'p', '', x.detail ) );
+					add( head, el( 'span', 'rabin-tick rabin-tick--' + x.status, marks[ x.status ] ), label, el( 'p', '', x.detail ) );
 					item.appendChild( head );
 					if ( x.fix ) {
 						item.appendChild( el( 'p', 'seo-a11y__fix', x.fix ) );
@@ -919,7 +919,7 @@
 			var lists = el( 'div', 'seo-gaps' );
 			var lose = el( 'div', 'seo-card seo-gap seo-gap--behind' );
 			var loseHead = el( 'div', 'seo-card__head' );
-			add( loseHead, el( 'h3', 'bay-h3', 'Where they beat you' ), el( 'span', 'seo-tab__n is-bad', behind.length ) );
+			add( loseHead, el( 'h3', 'rabin-h3', 'Where they beat you' ), el( 'span', 'seo-tab__n is-bad', behind.length ) );
 			lose.appendChild( loseHead );
 			if ( ! behind.length ) {
 				lose.appendChild( el( 'p', 'seo-empty-note', 'Nowhere. You match or beat them on every point we measure.' ) );
@@ -931,7 +931,7 @@
 			} );
 			var win = el( 'div', 'seo-card seo-gap seo-gap--ahead' );
 			var winHead = el( 'div', 'seo-card__head' );
-			add( winHead, el( 'h3', 'bay-h3', 'Where you lead' ), el( 'span', 'seo-tab__n', ahead.length ) );
+			add( winHead, el( 'h3', 'rabin-h3', 'Where you lead' ), el( 'span', 'seo-tab__n', ahead.length ) );
 			win.appendChild( winHead );
 			if ( ! ahead.length ) {
 				win.appendChild( el( 'p', 'seo-empty-note', 'Not yet. The list on the left is your plan.' ) );
@@ -967,7 +967,7 @@
 
 			// Which site the tabs below describe.
 			var sw = el( 'div', 'seo-switch' );
-			sw.appendChild( el( 'span', 'bay-mono', 'Details below for:' ) );
+			sw.appendChild( el( 'span', 'rabin-mono', 'Details below for:' ) );
 			[ [ 'you', 'You · ' + youHost ], [ 'them', 'Competitor · ' + themHost ] ].forEach( function ( o, i ) {
 				var b = el( 'button', 'seo-filter', o[ 1 ] );
 				b.type = 'button';

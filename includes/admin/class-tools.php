@@ -11,7 +11,7 @@ namespace Site_Audit_Report\Admin;
 use Site_Audit_Report\Audits;
 use Site_Audit_Report\Plugin;
 use Site_Audit_Report\Seo_Inspector;
-use Site_Audit_Report\Service_Bay;
+use Site_Audit_Report\Service_Rabin;
 use Site_Audit_Report\Settings;
 
 defined( 'ABSPATH' ) || exit;
@@ -139,7 +139,7 @@ final class Tools {
 		$s        = Settings::get();
 		$settings = admin_url( 'admin.php?page=' . Admin::SETTINGS_SLUG );
 		$missing  = Plugin::missing_requirements();
-		$prices   = array_sum( array_map( static fn( $t ) => (int) $t['price'], Service_Bay::tools() ) );
+		$prices   = array_sum( array_map( static fn( $t ) => (int) $t['price'], Service_Rabin::tools() ) );
 		$cron     = defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON;
 
 		return array(
@@ -229,7 +229,7 @@ final class Tools {
 				'stored'  => __( 'Yes, with the lead details', 'site-audit-report' ),
 			),
 			array(
-				'id'      => 'bay',
+				'id'      => 'security',
 				'icon'    => 'dashicons-shield',
 				'name'    => __( 'WordPress Security Check', 'site-audit-report' ),
 				'tag'     => 'site_audit_security',
@@ -332,7 +332,7 @@ final class Tools {
 						</dl>
 						<?php if ( 'seo' === $tool['id'] ) : ?>
 							<p><a class="button button-primary" href="<?php echo esc_url( $seo ); ?>"><?php esc_html_e( 'Open the SEO Inspector', 'site-audit-report' ); ?></a></p>
-						<?php elseif ( 'bay' === $tool['id'] ) : ?>
+						<?php elseif ( 'security' === $tool['id'] ) : ?>
 							<p><a class="button" href="<?php echo esc_url( add_query_arg( 'source', 'service', $audits ) ); ?>"><?php esc_html_e( 'See security checks', 'site-audit-report' ); ?></a> <a class="button" href="<?php echo esc_url( add_query_arg( 'lead_status', 'booked', $audits ) ); ?>"><?php esc_html_e( 'See bookings', 'site-audit-report' ); ?></a></p>
 						<?php else : ?>
 							<p><a class="button" href="<?php echo esc_url( add_query_arg( 'source', 'form', $audits ) ); ?>"><?php esc_html_e( 'See form leads', 'site-audit-report' ); ?></a></p>
@@ -422,7 +422,7 @@ final class Tools {
 						<tr><td><code>wp site-audit-report run-queue</code></td><td><?php esc_html_e( 'WP-CLI: process queued audits from a real cron job.', 'site-audit-report' ); ?></td></tr>
 					</tbody>
 				</table>
-				<p class="description"><?php esc_html_e( 'Restyle the Security Check and SEO Inspector by overriding the --bay-* CSS variables on .sar-bay.', 'site-audit-report' ); ?></p>
+				<p class="description"><?php esc_html_e( 'Restyle the Security Check and SEO Inspector by overriding the --rabin-* CSS variables on .sar-rabin.', 'site-audit-report' ); ?></p>
 			</div>
 		</div>
 		<?php
